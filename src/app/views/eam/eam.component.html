@@ -1,0 +1,217 @@
+<div class="animated fadeIn">
+
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <span class="breadcrumb-item active" aria-current="page">Model View</span>
+  </nav>
+
+  <ngx-loading-bar [includeSpinner]="'false'" [fixed]="'false'"></ngx-loading-bar>
+
+  <div class="container-fluid" *ngIf="models">
+    <div class="row">
+      <div class="col-lg">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title">Model View</h2>
+            <div class="btn-toolbar justify-content-between">
+              <div class="btn-group">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <button (click)="zoom(-1)" class="btn btn-secondary mr-0 btn-icon" [disabled]="currentLevel <= 0"
+                            tooltip="Zoom Out"
+                            triggers="hover">
+                      <i class="fa fa-search-minus"></i>
+                    </button>
+                  </div>
+                  <input class="btn-icon mr-0" type="text" ngModel="{{rootLevelsZoom[currentLevel]}}" style="width: 50px; text-align: center"
+                         disabled>
+                  <div class="input-group-append">
+                    <button (click)="zoom(1)" class="btn btn-secondary btn-icon"
+                            [disabled]="currentLevel >= rootLevelsZoom.length -1" tooltip="Zoom In"
+                            triggers="hover">
+                      <i class="fa fa-search-plus"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="input-group">
+                  <button (click)="splitCellsAndUpdateGrid()" class="btn btn-secondary btn-icon"
+                          tooltip="Split Cells"
+                          triggers="hover">
+                    <i class="fa fa-th"></i>
+                  </button>
+                  <button (click)="mergeCellsAndUpdateGrid()" class="btn btn-secondary btn-icon" tooltip="Merge Cells"
+                          triggers="hover">
+                    <i class="fa fa-th-large"></i>
+                  </button>
+                  <button id="reload" (click)="updateEamContainers()" class="btn btn-primary btn-icon" tooltip="Save"
+                          triggers="hover"><i class="fa fa-save"></i></button>
+                </div>
+              </div>
+              <button (click)="reloadData()" class="btn btn-outline-danger pull-right btn-icon" tooltip="Reload"
+                      triggers="hover">
+                <i class="fa fa-refresh"></i>
+              </button>
+            </div>
+            <br>
+            <div class="container model-pool bg-light border border-secondary rounded flex mw-100">
+              <button class="btn btn-outline-success btn-icon mt-0" routerLinkActive="active"
+                      routerLink="/eam/add"
+                      type="button" tooltip="Add Model" triggers="hover">
+                <i class="fa fa-plus-circle"></i>
+              </button>
+              <h6 class="d-inline m-0">
+                Models with Status:
+                <span (click)="updateViewForModelStatus('PLANNED')" class="badge" [ngClass]="{
+                    'badge-dark' : selectedStatus === 'PLANNED',
+                    'badge-light font-weight-light' : selectedStatus !== 'PLANNED'
+                }" tooltip="Show eam view for models with status 'PLANNED'">
+                  PLANNED
+                </span>
+                <span class="badge"><i class="icon-arrow-right"></i></span>
+                <span (click)="updateViewForModelStatus('OPERATION')"
+                      class="badge" [ngClass]="{
+                          'badge-success' : selectedStatus === 'OPERATION',
+                          'badge-light font-weight-light' : selectedStatus !== 'OPERATION'
+                }" tooltip="Show eam view for models with status 'OPERATION'">
+                  OPERATION
+                </span>
+                <span class="badge"><i class="icon-arrow-right"></i></span>
+                <span (click)="updateViewForModelStatus('MAINTENANCE')"
+                      class="badge" [ngClass]="{
+                          'badge-info' : selectedStatus === 'MAINTENANCE',
+                          'badge-light font-weight-light' : selectedStatus !== 'MAINTENANCE'
+                }" tooltip="Show eam view for models with status 'MAINTENANCE'">
+                  MAINTENANCE
+                </span>
+              </h6>
+              <hr>
+
+              <div id="model-pool" class="row" style="padding-left: 16px;" dragula="{{BAG}}"
+                   [(dragulaModel)]="modelPool">
+                <div *ngFor="let model of modelPool">
+                  <div class="model-cell row rounded move-handle" tooltip="{{model?.modelMetadata?.name}}"
+                       triggers="mouseenter click:mouseleave click mousedown" (click)="selectModel(model, detailsModal)"
+                       [ngClass]="{'bg-dark':selectedStatus === 'PLANNED', 'bg-success':selectedStatus === 'OPERATION',
+                       'bg-info text-dark':selectedStatus === 'MAINTENANCE'}">
+                    <label class="model-name col text-truncate no-click">
+                      {{model?.modelMetadata?.name}}
+                    </label>
+                    <span class="badge col-auto badge-secondary no-click">
+                      v{{model?.modelMetadata?.version}}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br>
+
+            <div [ngStyle]="{'height':height + 'px'}">
+              <gridster class="bg-light rounded border border-secondary" [options]="options">
+                <gridster-item [item]="cell" *ngFor="let cell of dashboard" [ngClass]="{
+                'descriptor-cell' : cell.type === 'interact',
+                'bg-transparent border rounded': cell.type === 'models',
+                'orgunit-cell' : cell.type ==='orgunit',
+                'process-cell' : cell.type ==='process'
+                }">
+
+                  <div *ngIf="cell.type === 'interact'">
+                    <div class="descriptor-process align-top">
+                      <span class="float-right">Business Process</span>
+                      <br>
+                      <span class="descriptor-button float-right" (click)="openAddBusinessProcessDialog()">
+                        <i class="fa fa-plus-circle"></i>&nbsp;Add
+                      </span>
+                    </div>
+                    <div class="descriptor-orgunit align-bottom">
+                      <span class="descriptor-button float-left" (click)="openAddOrganisationUnitDialog()">
+                        <i class="fa fa-plus-circle"></i>&nbsp;Add
+                      </span>
+                      <br>
+                      <span class="float-left">Organisation Unit</span>
+                    </div>
+                  </div>
+
+                  <div class="clearfix" *ngIf="cell.type === 'process'">
+                    <span (click)="moveProcessLeft(cell)"><i class="fa fa-arrow-left float-left"></i></span>
+                    <span (click)="moveProcessRight(cell)"><i class="fa fa-arrow-right float-left"></i></span>
+                    <span (click)="openEditBusinessProcessDialog(cell)"><i class="fa fa-edit float-left"></i></span>
+                    <span (click)="deleteBusinessProcessGrid(cell)"><i class="fa fa-trash float-right"></i></span>
+                  </div>
+
+                  <div class="clearfix" *ngIf="cell.type === 'orgunit'">
+                    <span (click)="moveOrgUnitUp(cell)"><i class="fa fa-arrow-up float-left"></i></span>
+                    <span (click)="moveOrgUnitDown(cell)"><i class="fa fa-arrow-down float-left"></i></span>
+                    <span (click)="openEditOrganisationUnitDialog(cell)"><i class="fa fa-edit float-left"></i></span>
+                    <span (click)="deleteOrganisationUnitCell(cell)"><i class="fa fa-trash float-right"></i></span>
+                  </div>
+
+                  <div class="clearfix" *ngIf="cell.type === 'models'">
+                    <span><i class="fa fa-arrows float-left"></i></span>
+                    <span (click)="deleteGridContainer(cell)"><i class="fa fa-trash float-right"></i></span>
+                  </div>
+
+                  <div [id]="'eam:' + cell.x + ':' + cell.y"
+                       style="height: 100%; width: 100%; position: absolute; top: 0; z-index: -1; padding-top: 38px;">
+                    <div *ngIf="cell.type === 'orgunit'" class="orgunit-name gridster-item-content">
+                      <span><i class="icon-organization"></i>&nbsp;{{cell.content[0].label}}</span>
+                    </div>
+                    <div *ngIf="cell.type === 'process'" class="gridster-item-content">
+                      <table class="process-name text-center">
+                        <tr>
+                          <td>
+                            {{cell.content[0].label}}
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+
+                    <div *ngIf="cell.type === 'models'" style="height: inherit;" class="gridster-item-content">
+                      <div id='model' class="container model-container" dragula="{{BAG}}"
+                           [(dragulaModel)]="cell.content">
+                        <div *ngFor="let model of cell.content">
+                          <div class="model-cell row rounded move-handle" tooltip="{{model?.modelMetadata?.name}}"
+                               triggers="mouseenter click:mouseleave click mousedown"
+                               (click)="selectModel(model, detailsModal)"
+                               [ngClass]="{'bg-dark': selectedStatus === 'PLANNED',
+                               'bg-success':selectedStatus === 'OPERATION',
+                                'bg-info text-dark': selectedStatus === 'MAINTENANCE'}">
+                            <label class="model-name col text-truncate no-click">
+                              {{model?.modelMetadata?.name}}
+                            </label>
+                            <span class="badge badge-secondary col-auto no-click">
+                              v{{model?.modelMetadata?.version}}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </gridster-item>
+              </gridster>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div bsModal #detailsModal="bs-modal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title pull-left">Model Details</h4>
+              <button type="button" class="close" aria-label="Close" (click)="detailsModal.hide()">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <app-model-details *ngIf="selectedModel"
+                                 [model]="selectedModel"
+                                 [inEAMView]="true"
+                                 [eamSaved]="eamSaved"
+                                 (beforeDeletion)="onDeleteEAMContainer($event, detailsModal)">
+              </app-model-details>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

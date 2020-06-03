@@ -1,0 +1,96 @@
+<div class="animated fadeIn" *ngIf="projectIDExists">
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <a class="breadcrumb-item" routerLink="/projects">Projects</a>
+    <span *ngIf="isAdd" class="breadcrumb-item active" aria-current="page">Add</span>
+    <a *ngIf="!isAdd" class="breadcrumb-item" routerLink="/projects/{{projectID}}">{{project?.name}}</a>
+    <span *ngIf="!isAdd" class="breadcrumb-item active" aria-current="page">Edit</span>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="card-title" *ngIf="!isAdd">Edit Project</h2>
+        <h2 class="card-title" *ngIf="isAdd">Add Project</h2>
+
+        <form #projectForm="ngForm">
+          <div class="form-group row">
+            <label for="projectname" class="col-sm-2 col-form-label">Name:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="projectname" maxlength="{{inputMaxLength}}"
+                     [(ngModel)]="project.name" name="projectname" required>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="projecteditor" class="col-sm-2 col-form-label">Editor(s):</label>
+            <div class="col-sm-10">
+              <ng-select id="projecteditor" [items]="users"
+                         bindLabel="name"
+                         [loading]="false"
+                         [(ngModel)]="project.editors"
+                         [multiple]="true"
+                         name="projecteditor"
+                         class="custom"
+                         required
+                         minlength="1"
+              >
+              </ng-select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="projectdoc" class="col-sm-2 col-form-label">Date of Creation:</label>
+            <div class="col-sm-10">
+              <input type="date" class="form-control" id="projectdoc" value="{{ date }}"
+                     [(ngModel)]="project.creationDate" name="projectdoc">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="projectsd" class="col-sm-2 col-form-label">Starting date:</label>
+            <div class="col-sm-10">
+              <input type="date" class="form-control" id="projectsd" value="{{ date }}"
+                     [(ngModel)]="project.startDate" name="projectsd">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="projected" class="col-sm-2 col-form-label">Ending date:</label>
+            <div class="col-sm-10">
+              <input type="date" class="form-control" id="projected" value="{{ date }}"
+                     [(ngModel)]="project.endDate" name="projected">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="useCase" class="col-sm-2 col-form-label">Use Case:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="useCase" maxlength="{{inputMaxLength}}"
+                     [(ngModel)]="project.useCase" name="useCase">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="projectstatus" class="col-sm-2 col-form-label">Status:</label>
+            <div class="col-sm-10">
+              <select id="projectstatus" class="form-control" [(ngModel)]="project.status" name="projectstatus"
+                      style="cursor: pointer" required>
+                <option value="NEW">New</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="CLOSED">Closed</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="projectdescription" class="col-sm-2 col-form-label">Description:</label>
+            <div class="col-sm-10">
+                  <textarea class="form-control" id="projectdescription" rows="3" maxlength="{{inputMaxLength}}"
+                            [(ngModel)]="project.description"
+                            name="projectdescription"></textarea>
+            </div>
+          </div>
+        </form>
+        <div class="custom-wrapper" align="center">
+          <button class="btn btn-ghost-danger" (click)="cancel()">Cancel</button>
+          &nbsp;
+          <button (click)="submit()" class="btn btn-success" [disabled]="!projectForm.form.valid">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<app-resource-not-found *ngIf="timeout && !projectIDExists"></app-resource-not-found>

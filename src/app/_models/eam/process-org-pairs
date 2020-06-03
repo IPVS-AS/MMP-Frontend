@@ -1,0 +1,6 @@
+export interface EamPairs {
+  process: string;
+  orgunit: string;
+  x: number;
+  y: number;
+}

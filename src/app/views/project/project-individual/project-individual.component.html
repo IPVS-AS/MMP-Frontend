@@ -1,0 +1,12 @@
+<div class="animated fadeIn" *ngIf="projectIDExists">
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <a class="breadcrumb-item" routerLink="/projects">Projects</a>
+    <span class="breadcrumb-item active" aria-current="page">{{project?.name}}</span>
+  </nav>
+  <ngx-loading-bar [includeSpinner]="'false'" [fixed]="'false'"></ngx-loading-bar>
+
+  <div class="container-fluid" *ngIf="projectIDExists">
+    <app-project-details *ngIf="project" [project]="project"></app-project-details>
+  </div>
+</div>
+<app-resource-not-found *ngIf="timeout && !projectIDExists"></app-resource-not-found>

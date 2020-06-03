@@ -1,0 +1,105 @@
+.btn {
+  margin-right: 5px;
+}
+
+.clearfix {
+  padding: 10px;
+}
+
+.container {
+  height: 100%;
+  padding-top: 10px;
+}
+
+.badge {
+  margin: 0.5em;
+}
+
+.fa {
+  margin: 2px;
+  cursor: pointer;
+}
+
+.gridster-item-content {
+  height: 100%;
+  background: transparent;
+}
+
+.model-pool {
+  padding-top: 10px;
+  padding-bottom: 16px;
+  height: inherit;
+}
+
+.descriptor-cell {
+  background: linear-gradient(to top right, #c8ced3 49.5%, #e4e7ea 50.5%);
+  height: inherit;
+  width: inherit;
+}
+
+.descriptor-process {
+  margin-top: 0;
+  margin-right: 5px;
+}
+
+.descriptor-orgunit {
+  margin-left: 5px;
+  position: fixed;
+  bottom: 5px;
+}
+
+.descriptor-button {
+  cursor: pointer;
+}
+
+.orgunit-cell {
+  background: #c8ced3;
+}
+
+.orgunit-name {
+  padding-left: 10px;
+}
+
+.process-cell {
+  /*reference to location in distribution build might be marked as invalid in your IDE*/
+  background: #e4e7ea url('/assets/img/bp_arrow.svg') no-repeat;
+  background-size: 100%;
+  background-position-y: center;
+}
+
+.process-name {
+  height: 100%;
+  width: 100%;
+  vertical-align: middle;
+  position: absolute;
+  top: 0;
+}
+
+.model-container {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.model-cell {
+  margin: 2px;
+  cursor: move;
+}
+
+.model-name {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.no-click {
+  pointer-events: none;
+}
+
+.badge-light {
+  cursor: pointer;
+}
+
+.addbtn {
+  height: 28px;
+  text-align: center;
+  line-height: 50%;
+}

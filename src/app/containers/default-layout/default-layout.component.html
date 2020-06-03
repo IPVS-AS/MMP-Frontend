@@ -1,0 +1,157 @@
+<ng-http-loader [entryComponent]="httpLoadingAnimation" [filteredMethods]="['GET']" [debounceDelay]="100"></ng-http-loader>
+<app-header
+  [fixed]="true"
+  [navbarBrandFull]="{src: 'assets/img/brand/mmp.svg', width: 89, height: 25, alt: 'MMP Logo'}"
+  [navbarBrandMinimized]="{src: 'assets/img/brand/mmp_icon.svg', width: 30, height: 30, alt: 'MMP Logo'}"
+  [sidebarToggler]="'lg'"
+  [asideMenuToggler]="'none'">
+  <ul class="nav navbar-nav d-md-down-none">
+    <li class="nav-item px-3">
+      <a class="nav-link" routerLink="/eam">EAM</a>
+    </li>
+    <li class="nav-item px-3">
+      <a class="nav-link" routerLink="/projects">Projects</a>
+    </li>
+    <li class="nav-item px-3">
+      <a class="nav-link" routerLink="/users">Users</a>
+    </li>
+  </ul>
+  <ul class="nav navbar-nav ml-auto">
+  </ul>
+</app-header>
+<toaster-container [toasterconfig]="toasterconfig"></toaster-container>
+<div class="app-body">
+  <app-sidebar [fixed]="true" [display]="'md'">
+    <perfect-scrollbar class="scroll-container" [autoPropagation]="true">
+      <div class="scrollable-content">
+        <ul class="nav">
+          <li class="nav-title">General</li>
+          <li class="nav-item">
+            <a routerLinkActive="active" class="nav-link" routerLink="/eam">
+              <i class="nav-icon icon-organization"></i> EAM
+            </a>
+          </li>
+          <li class="nav-item">
+            <a routerLinkActive="active" class="nav-link" routerLink="/users">
+              <i class="nav-icon fa fa-users"></i> Users
+            </a>
+          </li>
+          <li class="nav-item">
+            <a routerLinkActive="active" class="nav-link" routerLink="/projects">
+              <i class="nav-icon fa fa-th-list"></i> Projects
+            </a>
+          </li>
+          <li class="nav-item">
+            <a routerLinkActive="active" class="nav-link" routerLink="/deployments/">
+              <i class="nav-icon icon-cloud-upload"></i>Deployments
+            </a>
+          </li>
+          <li class="nav-item">
+            <a routerLinkActive="active" class="nav-link" routerLink="/advsearch">
+              <i class="nav-icon icon-magnifier"></i> Advanced Search
+            </a>
+          </li>
+          <ng-container *ngIf="project">
+            <li class="nav-title">{{project.name}}</li>
+            <li class="nav-item">
+              <a routerLinkActive="active" class="nav-link" routerLink="/projects/{{project.id}}/models/">
+                <i class="nav-icon fa fa-list"></i> Models
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLinkActive="active" class="nav-link" routerLink="/projects/{{project.id}}/models/add">
+                <i class="nav-icon fa fa-plus-circle"></i> Add Model
+              </a>
+            </li>
+            <li appNavDropdown="" routerLinkActive="open" class="nav-item nav-dropdown">
+              <a appNavDropdownToggle="" class="nav-link nav-dropdown-toggle" style="cursor: pointer;">
+                <i class="nav-icon icon-options"></i> Settings
+              </a>
+              <ul class="nav-dropdown-items">
+                <li class="nav-item tab">
+                  <a routerLinkActive="active" class="nav-link tab" routerLink="/projects/{{project.id}}/edit">
+                    <i routerLinkActive="active" class="nav-icon fa fa-edit"></i>Edit
+                  </a>
+                </li>
+                <li class="nav-item tab">
+                  <a class="nav-link tab" (click)="deleteProject()">
+                    <i class="nav-icon fa fa-trash"></i>Delete
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ng-container>
+
+          <ng-container *ngIf="project && model">
+            <li class="nav-title">{{model.modelMetadata.name}}</li>
+            <li appNavDropdown="" routerLinkActive="open" class="nav-item nav-dropdown">
+              <a appNavDropdownToggle="" class="nav-link nav-dropdown-toggle" style="cursor: pointer;">
+                <i class="nav-icon icon-chemistry"></i>Experimental
+              </a>
+              <ul class="nav-dropdown-items">
+                <li class="nav-item disabled">
+                  <a routerLinkActive="active" class="nav-link tab">
+                    <i routerLinkActive="active" class="nav-icon icon-organization"></i>Candidates
+                    <span class="badge badge-secondary">WIP</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a routerLinkActive="active" class="nav-link tab"
+                     routerLink="/projects/{{project.id}}/models/add"
+                     [queryParams]="{model:model.id}">
+                    <i routerLinkActive="active" class="nav-icon fa fa-code-fork"></i>New Version
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a routerLinkActive="active" class="nav-link tab"
+                     routerLink="/projects/{{project.id}}/models/{{model.id}}/versioning">
+                    <i routerLinkActive="active" class="nav-icon fa fa-history"></i>Versioning
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a routerLinkActive="active" class="nav-link tab"
+                     routerLink="/projects/{{project.id}}/models/{{model.id}}/edit">
+                    <i routerLinkActive="active" class="nav-icon fa fa-edit"></i>Edit
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <li appNavDropdown="" routerLinkActive="open" class="nav-item nav-dropdown">
+              <a appNavDropdownToggle="" class="nav-link nav-dropdown-toggle" style="cursor: pointer;">
+                <i routerLinkActive="active" class="nav-icon cui-speedometer"></i>Operational
+              </a>
+              <ul class="nav-dropdown-items">
+                <li class="nav-item" *ngIf="model?.modelMetadata?.status === 'OPERATION'">
+                  <a routerLinkActive="active" class="nav-link tab" routerLink="/deployments/projects/{{project.id}}/models/{{model.id}}/scoring">
+                    <i class="nav-icon icon-rocket"></i>Scoring
+                  </a>
+                </li>
+                <li class="nav-item disabled">
+                  <a routerLinkActive="active" class="nav-link tab" >
+                    <i class="nav-icon icon-screen-desktop"></i>Monitoring
+                    <span class="badge badge-secondary">WIP</span>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item" *ngIf="model?.opcuaInformationModels?.length > 0">
+              <a routerLinkActive="active" class="nav-link"
+                 routerLink="/projects/{{project.id}}/models/{{model.id}}/lineage">
+                <i class="nav-icon icon-share"></i>Lineage
+              </a>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+    </perfect-scrollbar>
+  </app-sidebar>
+
+  <!-- Main content -->
+  <main class="main">
+    <app-connection-error *ngIf="timeout"></app-connection-error>
+    <router-outlet *ngIf="projects">
+    </router-outlet>
+  </main>
+
+</div>

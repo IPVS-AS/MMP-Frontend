@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:cc="http://creativecommons.org/ns#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+  xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+  width="27.725355mm"
+  height="6.8579998mm"
+  viewBox="0 0 27.725355 6.8579998"
+  version="1.1"
+  id="svg843"
+  inkscape:version="0.92.3 (2405546, 2018-03-11)"
+  sodipodi:docname="mmp.svg">
+  <defs
+    id="defs837"/>
+  <sodipodi:namedview
+    id="base"
+    pagecolor="#ffffff"
+    bordercolor="#666666"
+    borderopacity="1.0"
+    inkscape:pageopacity="0.0"
+    inkscape:pageshadow="2"
+    inkscape:zoom="0.35"
+    inkscape:cx="-432.84001"
+    inkscape:cy="-19.999981"
+    inkscape:document-units="mm"
+    inkscape:current-layer="layer1"
+    showgrid="false"
+    fit-margin-top="0"
+    fit-margin-left="0"
+    fit-margin-right="0"
+    fit-margin-bottom="0"
+    inkscape:window-width="2560"
+    inkscape:window-height="1377"
+    inkscape:window-x="1912"
+    inkscape:window-y="-8"
+    inkscape:window-maximized="1"/>
+  <metadata
+    id="metadata840">
+    <rdf:RDF>
+      <cc:Work
+        rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+          rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+    inkscape:label="Ebene 1"
+    inkscape:groupmode="layer"
+    id="layer1"
+    transform="translate(-55.17999,-136.68367)">
+    <g
+      aria-label="M M P"
+      style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+      id="text1408">
+      <path
+        d="m 62.598907,136.68367 v 6.858 H 61.11724 v -4.26508 q -0.137583,0.39158 -0.465667,1.02658 l -1.185333,2.39184 h -1.153583 l -1.2065,-2.39184 q -0.328083,-0.64558 -0.465667,-1.02658 v 4.26508 h -1.4605 v -6.858 h 1.545167 l 1.566333,3.00567 q 0.179917,0.34925 0.338667,0.71967 0.15875,0.35983 0.254,0.635 0.148166,-0.48684 0.592666,-1.35467 l 1.576917,-3.00567 z"
+        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.58333302px;font-family:Dubai;-inkscape-font-specification:'Dubai, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458332"
+        id="path1417"/>
+      <path
+        d="m 73.905709,136.68367 v 6.858 h -1.481666 v -4.26508 q -0.137584,0.39158 -0.465667,1.02658 l -1.185333,2.39184 H 69.61946 l -1.2065,-2.39184 q -0.328084,-0.64558 -0.465667,-1.02658 v 4.26508 h -1.4605 v -6.858 h 1.545167 l 1.566333,3.00567 q 0.179917,0.34925 0.338667,0.71967 0.15875,0.35983 0.254,0.635 0.148166,-0.48684 0.592666,-1.35467 l 1.576917,-3.00567 z"
+        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.58333302px;font-family:Dubai;-inkscape-font-specification:'Dubai, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458332"
+        id="path1419"/>
+      <path
+        d="m 80.196012,136.68367 q 0.910167,0 1.513417,0.28575 0.60325,0.28575 0.899583,0.78317 0.296334,0.48683 0.296334,1.13242 0,0.68791 -0.306917,1.22766 -0.306917,0.52917 -0.931333,0.83609 -0.613834,0.29633 -1.502834,0.29633 h -0.867833 v 2.29658 h -1.502833 v -6.858 z m -0.179916,3.35492 q 0.645583,0 0.994833,-0.24342 0.34925,-0.254 0.34925,-0.86783 0,-0.51858 -0.3175,-0.77258 -0.306917,-0.26459 -0.867833,-0.26459 h -0.878417 v 2.14842 z"
+        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.58333302px;font-family:Dubai;-inkscape-font-specification:'Dubai, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458332"
+        id="path1421"/>
+    </g>
+  </g>
+</svg>

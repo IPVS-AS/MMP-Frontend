@@ -1,0 +1,20 @@
+div.sticky {
+  position: -webkit-sticky;
+  top: 0;
+  padding: inherit;
+  position: fixed;
+}
+
+.card-header {
+  padding: 0.1rem 1.25rem;
+}
+
+.model-group-table {
+  padding-left: 10px;
+  display: table;
+}
+
+.table tr.active {
+  background-color:lightgray !important;
+  color: black;
+}

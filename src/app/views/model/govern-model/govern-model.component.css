@@ -1,0 +1,44 @@
+.upload-drop-zone {
+  height: 100%;
+  width: 100%;
+  border-width: 2px;
+  cursor: pointer;
+}
+
+/* skin.css Style*/
+.upload-drop-zone {
+  color: #ccc;
+  border-style: dashed;
+  border-color: lightblue;
+  background-color: #add8e61a;
+  text-align: center
+}
+
+.upload-drop-zone.invalid {
+  border-color: #f86c6b;
+  background-color: #e46f6f1a;
+}
+
+.invalid-info-msg {
+  color: #f86c6b;
+}
+
+.button-distance {
+  padding: 20px;
+}
+
+.upload-drop-zone.drop {
+  background-color: white;
+}
+
+.upload-drop-zone span {
+  color: #ccc;;
+}
+
+.upload-drop-zone .file-upload-text {
+  color: grey;
+}
+
+.custom-wrapper {
+  text-align: center;
+}

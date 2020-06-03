@@ -1,0 +1,14 @@
+<div class="animated fadeIn">
+
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <a class="breadcrumb-item" routerLink="/projects">Projects</a>
+    <a class="breadcrumb-item" routerLink="/projects/{{projectID}}">{{project.name}}</a>
+    <a class="breadcrumb-item" routerLink="/projects/{{projectID}}/models">Models</a>
+    <span class="breadcrumb-item active" aria-current="page">{{model.modelMetadata.name}}</span>
+  </nav>
+
+  <div class="container-fluid" *ngIf="model, project">
+    <app-model-details [model]="model" [project]="project"></app-model-details>
+  </div>
+
+</div>

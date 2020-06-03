@@ -1,0 +1,292 @@
+<div class="animated fadeIn"  *ngIf="projectIDExists && modelIDExists">
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <a class="breadcrumb-item" routerLink="/projects">Projects</a>
+    <a class="breadcrumb-item" routerLink="/projects/{{projectID}}" *ngIf="project">{{project?.name}}</a>
+    <a class="breadcrumb-item" routerLink="/projects/{{projectID}}/models">Models</a>
+    <span *ngIf="isAdd" class="breadcrumb-item active" aria-current="page">Add</span>
+    <a *ngIf="!isAdd" class="breadcrumb-item" routerLink="/projects/{{projectID}}/models/{{modelID}}">{{model?.modelMetadata?.name}}</a>
+    <span *ngIf="!isAdd" class="breadcrumb-item active" aria-current="page">Edit</span>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="card-title" *ngIf="isAdd">Add Model</h2>
+        <h2 class="card-title" *ngIf="!isAdd">Edit Model</h2>
+
+        <form #modelForm="ngForm">
+
+          <div class="form-group row">
+            <label for="project" class="col-sm-2 col-form-label">Project:</label>
+            <div class="col-sm-10" *ngIf="existsProject">
+              <input type="text" class="form-control" id="project"
+                     [(ngModel)]="project.name" name="project" disabled>
+            </div>
+            <div class="col-sm-10" *ngIf="!existsProject">
+              <ng-select [items]="projects"
+                         [loading]="false"
+                         bindLabel="name"
+                         bindValue="id"
+                         [(ngModel)]="model.projectId"
+                         class="rounded custom"
+                         name="allprojects"
+                         (change)="projectChanged($event)"
+                         required
+                         minlength="1"
+                         [disabled]="!isAdd && isArchived">
+              </ng-select>
+
+            </div>
+          </div>
+
+          <div *ngIf="!isAdd" class="form-group row">
+            <label for="modelGroup" class="col-sm-2 col-form-label">Model Group:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="modelGroup"
+                     [(ngModel)]="model.modelMetadata.modelGroup.modelGroupName" disabled
+                     name="modelGroup">
+            </div>
+          </div>
+          <div *ngIf="isAdd" class="form-group row">
+            <label class="col-sm-2 col-form-label">Model Group:</label>
+            <div class="col-sm-10">
+              <ng-select [items]="modelGroups"
+                         [addTag]="true"
+                         bindLabel="modelGroupName"
+                         [loading]="false"
+                         [(ngModel)]="model.modelMetadata.modelGroup"
+                         name="modelGroup"
+                         class="rounded custom"
+                         placeholder="New model group"
+                         required>
+              </ng-select>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="modelName" class="col-sm-2 col-form-label">Name:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="modelName" required
+                     [(ngModel)]="model.modelMetadata.name" maxlength="{{inputMaxLength}}"
+                     name="modelName" [disabled]="!isAdd && isArchived">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Author:</label>
+            <div class="col-sm-10">
+              <ng-select id="authors"
+                         [items]="users"
+                         bindLabel="name"
+                         [loading]="false"
+                         [(ngModel)]="model.modelMetadata.author"
+                         name="modelAuthor"
+                         class="rounded custom"
+                         required
+                         [disabled]="!isAdd && isArchived"
+              >
+              </ng-select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="date" class="col-sm-2 col-form-label">Date of Creation:</label>
+            <div class="col-sm-10">
+              <input type="date" class="form-control" id="date" value="{{ date }}"
+                     [(ngModel)]="model.modelMetadata.dateOfCreation" name="date" [disabled]="!isAdd && isArchived">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="description" class="col-sm-2 col-form-label">Description:</label>
+            <div class="col-sm-10">
+                  <textarea class="form-control" id="description" rows="3" required
+                            [(ngModel)]="model.modelMetadata.modelDescription" maxlength="{{descriptionMaxLength}}"
+                            name="description" [disabled]="!isAdd && isArchived"></textarea>
+              <div class="small text-secondary"
+                   [ngClass]="{'text-danger' : descriptionMaxLength - model?.modelMetadata.modelDescription.length == 0}"
+                   *ngIf="(model?.modelMetadata.modelDescription != null && descriptionMaxLength - model?.modelMetadata.modelDescription.length < 250)">
+                {{descriptionMaxLength - model.modelMetadata.modelDescription.length}} characters remaining
+              </div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label" for="type">Algorithm: </label>
+            <div class="col-sm-10">
+              <input type="text" id="type" class="form-control" [(ngModel)]="model.modelMetadata.algorithm"
+                     maxlength="{{inputMaxLength}}"
+                     name="algorithm" [disabled]="!isAdd && isArchived">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label" for="status">Status: </label>
+            <div class="col-sm-10">
+              <select id="status" class="form-control" [(ngModel)]="model.modelMetadata.status" required
+                      name="status" style="cursor: pointer" (change)="onStateChange()" >
+                <option *ngFor="let status of modelStates()">{{status}}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label" for="uploader-pmml-input">Model file (PMML/RDS/Pkl): </label>
+            <div class="col-3">
+              <label for="uploader-pmml-input" ng2FileDrop
+                     [ngClass]="{'drop': hasPmmlDropZoneOver,  'invalid': model?.modelMetadata?.status === 'OPERATION' &&  pmmlFile == null}"
+
+                     (onFileDrop)="pmmlFileChange($event)" [uploader]="pmmlUploader"
+                     (fileOver)="fileOverPmml($event)"
+                     class="upload-drop-zone">
+                <div class="file-upload-text">Drop files here
+                  <span> (or click to upload)</span></div>
+              </label>
+              <input #uploadPMML type="file" ng2FileSelect [uploader]="pmmlUploader"
+                     id="uploader-pmml-input" style="display:none" accept=".xml,.pmml,.rds,.pkl" [disabled]="!isAdd && isArchived"/>
+            </div>
+            <div class="col-2">
+              <div class="invalid-info-msg" [ngStyle]="{'display': model?.modelMetadata?.status === 'OPERATION' &&  pmmlFile == null ? 'block' : 'none'}">
+                Please upload a pmml file, if status is OPERATION.
+              </div>
+              <tr *ngFor="let item of pmmlUploader.queue">
+                <td><strong>{{ item?.file?.name }} </strong></td>
+                <td nowrap class="button-distance">
+                  <button type="button" class="btn btn-default"
+                          (click)="removePmmlFile(item)" [disabled]="!isAdd && isArchived">
+                    <span class="nav-icon cui-trash" style="color: red;"></span>
+                  </button>
+                </td>
+                <td nowrap>{{formatBytes(item?.file?.size)}}</td>
+              </tr>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Data Source: </label>
+            <div class="col-sm-10">
+              <ng-select id="dataSources" [items]="dataSources"
+                         bindLabel="name"
+                         [loading]="false"
+                         (clear)="onDataSourceClear()"
+                         (change)="onDataSourceChange($event)"
+                         [(ngModel)]="dataSource.type"
+                         name="dataSource" [disabled]="!isAdd && isArchived">
+              </ng-select>
+            </div>
+          </div>
+          <div *ngIf="dataSource.type === 'RELATIONAL_DATA_BASE'">
+            <div class="form-group row">
+              <label for="url" class="col-sm-2 col-form-label">URL:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="url" required
+                       [(ngModel)]="model?.relationalDBInformation.url" name="url"
+                       [disabled]="!isAdd && isArchived">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="dbUser" class="col-sm-2 col-form-label">DB User:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="dbUser" required
+                       [(ngModel)]="model?.relationalDBInformation.dbUser" name="dbUser"
+                       [disabled]="!isAdd && isArchived">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="dbPassword" class="col-sm-2 col-form-label">DB Password:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="dbPassword" required
+                       [(ngModel)]="model?.relationalDBInformation.password" name="dbPassword"
+                       [disabled]="!isAdd && isArchived">
+              </div>
+            </div>
+          </div>
+          <div *ngIf="dataSource.type === 'OPCUA'">
+            <div class="form-group row">
+              <label class="col-sm-2 col-form-label" for="uploader-opcua-input">OPCUA: </label>
+              <div class="col-3">
+                <label for="uploader-opcua-input" ng2FileDrop [ngClass]="{'drop': hasOpcuaDropZoneOver}"
+                       (onFileDrop)="opcuaFileChange($event)" [uploader]="opcuaUploader"
+                       class="upload-drop-zone" (fileOver)="fileOverOpcua($event)">
+                  <div class="file-upload-text">Drop files here
+                    <span> (or click to upload)</span></div>
+                </label>
+                <input type="file" ng2FileSelect (onFileSelected)="opcuaFileChange($event)" [uploader]="opcuaUploader" multiple
+                       id="uploader-opcua-input" style="display:none" [disabled]="!isAdd && isArchived"/>
+              </div>
+              <div class="col-2">
+                <tr *ngFor="let item of opcuaUploader.queue">
+                  <td><strong>{{ item?.file?.name }} </strong></td>
+                  <td nowrap class="button-distance">
+                    <button type="button" class="btn btn-default"
+                            (click)="removeOpcuaFile(item);" [disabled]="!isAdd && isArchived">
+                      <span class="nav-icon cui-trash" style="color: red;"></span>
+                    </button>
+                  </td>
+                  <td nowrap>{{formatBytes(item?.file?.size)}}</td>
+                </tr>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <form>
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Custom Fields:</label>
+            <div class="col-sm-10" [formGroup]="form">
+              <div formArrayName="customFields">
+                <div *ngFor="let item of customFields.controls; let itemIndex=index" [formGroupName]="itemIndex">
+                  <div class="form-group row">
+                    <div class="col-sm-2">
+                      <button class="btn btn-block btn-ghost-danger" type="button"
+                              (click)="deleteCustomField(itemIndex)"
+                              [disabled]="!isAdd && isArchived">Delete Field
+                      </button>
+                    </div>
+                    <div class="col-sm-2">
+                      <input type="text" class="form-control" id="customFieldName" name="customFieldName"
+                             formControlName="fieldName" maxlength="{{inputMaxLength}}"
+                             />
+                    </div>
+                    <div class="col-sm-8">
+                        <textarea class="form-control" id="customFieldValue" rows="1" name="customFieldValue"
+                                  formControlName="fieldContent" style="height: 35px"
+                                  maxlength="{{inputMaxLength}}"
+                                  ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <div class="col-sm-2">
+                  <button class="btn btn-block btn-ghost-success" type="button" (click)="addCustomField()"
+                          [disabled]="!isAdd && isArchived">Add
+                    Field
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="custom-wrapper" align="center">
+          <button class="btn btn-ghost-danger" (click)="cancel()">Cancel</button>
+          &nbsp;
+          <button (click)="submit()" class="btn btn-success" [disabled]="!modelForm.form.valid || !isModelValid()">
+            Submit
+          </button>
+          <p></p>
+        </div>
+        <app-model-file-details #modelFileDetails *ngIf="opcuaInformationModels && opcuaInformationModels.length > 0 && pmmlMetadata; else else1"
+                                [modelName]="model.modelMetadata.name"
+                                [opcuaInformationModels]="opcuaInformationModels"
+                                [pmmlMetaData]="pmmlMetadata" [showPmml]="showPmml"></app-model-file-details>
+        <ng-template #else1>
+          <app-model-file-details #modelFileDetails *ngIf="opcuaInformationModels && opcuaInformationModels.length > 0; else else2"
+                                  [modelName]="model.modelMetadata.name"
+                                  [opcuaInformationModels]="opcuaInformationModels"></app-model-file-details>
+        </ng-template>
+        <ng-template #else2>
+          <app-model-file-details #modelFileDetails *ngIf="pmmlMetadata"
+                                  [pmmlMetaData]="pmmlMetadata" [showPmml]="showPmml"></app-model-file-details>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
+<app-resource-not-found *ngIf="(timeout && projectIDExists && !modelIDExists) || (timeout && !projectIDExists)"></app-resource-not-found>

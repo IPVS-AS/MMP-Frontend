@@ -1,0 +1,100 @@
+<div class="card" *ngIf="project">
+  <div class="card-body">
+
+    <div class="row">
+      <div class="col">
+        <div class="card-title">
+          <h3>Overview for {{project.name}}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col text-left">
+        <div class="btn-toolbar">
+        <button class="btn btn-outline-primary btn-icon"
+                routerLink="/projects/{{project.id}}/models" type="button" tooltip="Show Models" triggers="hover">
+          <i class="fa fa-external-link"></i>
+        </button>
+        <button class="btn btn-outline-secondary btn-icon"
+                routerLink="/projects/{{project.id}}" type="button" tooltip="Open Project" triggers="hover">
+          <i class="fa fa-info"></i>
+        </button>
+        <button class="btn btn-outline-warning btn-icon"
+                routerLink="/projects/{{project.id}}/edit" type="button" tooltip="Edit" triggers="hover">
+          <i class="fa fa-edit"></i>
+        </button>
+        <button class="btn btn-outline-danger btn-icon" type="button" (click)="openConfirmationDialog()" tooltip="Delete" triggers="hover">
+          <i class="fa fa-trash"></i>
+        </button>
+        </div>
+      </div>
+    </div>
+
+    <br>
+
+    <dl class="row d-block">
+      <dt class="col-sm">Status:</dt>
+      <dd class="col-sm" style="max-height:200px;overflow: auto">
+        <span *ngIf="!project.status" class="badge badge-light">Undefined</span>
+        <div *ngIf="project.status">
+          <span class="badge" [ngClass]="{
+                    'badge-dark' : project.status.toString() === 'NEW',
+                    'badge-light font-weight-light' : project.status.toString() !== 'NEW'
+          }">
+            NEW
+          </span>
+          <span class="badge"><i class="icon-arrow-right"></i></span>
+          <span class="badge" [ngClass]="{
+                    'badge-success' : project.status.toString() === 'IN_PROGRESS',
+                    'badge-light font-weight-light' : project.status.toString() !== 'IN_PROGRESS'
+          }">
+            IN_PROGRESS
+          </span>
+          <span class="badge"><i class="icon-arrow-right"></i></span>
+          <span class="badge" [ngClass]="{
+                    'badge-secondary' : project.status.toString() === 'CLOSED',
+                    'badge-light font-weight-light' : project.status.toString() !== 'CLOSED'
+          }">
+            CLOSED
+          </span>
+        </div>
+      </dd>
+
+      <dt class="col-sm">Use Case:</dt>
+      <dd class="col-sm" style="max-height:200px;overflow: auto">{{project.useCase}}</dd>
+
+      <dt class="col-sm">Description:</dt>
+      <dd class="col-sm" style="max-height:200px;overflow: auto">{{project.description}}</dd>
+
+      <dt class="col-sm">Start Date:</dt>
+      <dd class="col-sm" style="max-height:200px;overflow: auto">{{project.startDate}}</dd>
+
+      <dt class="col-sm">End Date:</dt>
+      <dd class="col-sm" style="max-height:200px;overflow: auto">{{project.endDate}}</dd>
+
+      <dt class="col-sm">Creation Date:</dt>
+      <dd class="col-sm" style="max-height:200px;overflow: auto">{{project.creationDate}}</dd>
+
+      <dt class="col-sm"> Model Count:</dt>
+      <dd class="col-sm">{{models.length}}</dd>
+
+      <dt class="col-sm"> Editors:</dt>
+      <dd class="col-sm">
+        <div style="max-height: 200px; overflow: auto">
+          <div *ngFor="let u of users">
+            {{u.name}}
+          </div>
+        </div>
+      </dd>
+    </dl>
+  </div>
+</div>
+
+<div class="card" *ngIf="!project">
+  <div class="card-body">
+    <h2 class="card-title">No Project selected.</h2>
+    <div class="card-text">
+      Select an entry on the left to show details.
+    </div>
+  </div>
+</div>

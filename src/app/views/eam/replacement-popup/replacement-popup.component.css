@@ -1,0 +1,34 @@
+.modal-dialog {
+  max-width: 75%;
+}
+
+.bp-title {
+  background-image: url('assets/img/bp_arrow.svg');
+  background-repeat: no-repeat;
+  background-size: 100%;
+  background-position-y: center;
+}
+
+.card {
+  margin-right: 1rem;
+  margin-bottom: 0;
+}
+
+.card-deck .container-card {
+  width: 20rem;
+  min-width: 20rem;
+  max-width: 20rem;
+  margin-bottom: 1rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.container-hr {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.container-legend {
+  margin-left: 0.5rem;
+  margin-bottom: 0.25rem;
+}

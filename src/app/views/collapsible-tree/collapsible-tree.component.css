@@ -1,0 +1,56 @@
+.node {
+  cursor: pointer;
+}
+.node circle {
+  fill: #fff;
+  stroke: black;
+  stroke-width: 5px;
+}
+.node circle:hover {
+  stroke-width: 7px;
+}
+.node circle.ghost {
+  width: 0;
+  height: 0;
+  fill: none;
+  stroke: none;
+  stroke-width: 0;
+  cursor: default;
+}
+.node circle.machine {
+  stroke: seagreen;
+}
+.node circle.sensor {
+  stroke: darkgrey;
+}
+.node circle.component {
+  stroke: darkgoldenrod;
+}
+.node circle.property {
+  stroke: steelblue;
+}
+.node circle.variable {
+  stroke: lightcoral;
+}
+.node text {
+  font: 13px sans-serif;
+  font-weight: normal;
+  color: #000;
+}
+.node text:hover {
+  font-weight: bold;
+}
+path.ghost {
+  fill: none;
+  stroke: none;
+  stroke-width: 0;
+  cursor: default;
+}
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+div.collapsible-tree {
+  overflow: auto;
+}

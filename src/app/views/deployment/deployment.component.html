@@ -1,0 +1,95 @@
+<div class="animated fadeIn">
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <span class="breadcrumb-item active" aria-current="page">Deployments</span>
+  </nav>
+
+  <ngx-loading-bar [includeSpinner]="'false'" [fixed]="'false'"></ngx-loading-bar>
+
+  <div class="container-fluid" *ngIf="models?.length > 0">
+    <div class="row" *ngIf="models">
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title">Deployments</h2>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                <tr>
+                  <th scope="col" (click)="sortByName()" style="cursor: pointer;">
+                    Name <i *ngIf="sortedBy === 'name' && ascending" class="fa fa-sort-up"></i>
+                    <i *ngIf="sortedBy === 'name' && !ascending" class="fa fa-sort-down"></i>
+                    <i *ngIf="sortedBy != 'name'" class="fa fa-sort"></i>
+                  </th>
+                  <th scope="col" (click)="sortByAuthor()" style="cursor: pointer;">
+                    Author <i *ngIf="sortedBy === 'Author' && ascending" class="fa fa-sort-up"></i>
+                    <i *ngIf="sortedBy === 'Author' && !ascending" class="fa fa-sort-down"></i>
+                    <i *ngIf="sortedBy != 'Author'" class="fa fa-sort"></i>
+                  </th>
+                  <th scope="col" (click)="sortByVersion()" style="cursor: pointer;">
+                    Version <i *ngIf="sortedBy === 'Version' && ascending" class="fa fa-sort-up"></i>
+                    <i *ngIf="sortedBy === 'Version' && !ascending" class="fa fa-sort-down"></i>
+                    <i *ngIf="sortedBy != 'Version'" class="fa fa-sort"></i>
+                  </th>
+                  <th scope="col" (click)="sortByStatus()" style="cursor: pointer;">
+                    Status <i *ngIf="sortedBy === 'Status' && ascending" class="fa fa-sort-up"></i>
+                    <i *ngIf="sortedBy === 'Status' && !ascending" class="fa fa-sort-down"></i>
+                    <i *ngIf="sortedBy != 'Status'" class="fa fa-sort"></i>
+                  </th>
+                  <th scope="col" (click)="sortByAlgorithm()" style="cursor: pointer;">
+                    Algorithm <i *ngIf="sortedBy === 'Algorithm' && ascending" class="fa fa-sort-up"></i>
+                    <i *ngIf="sortedBy === 'Algorithm' && !ascending" class="fa fa-sort-down"></i>
+                    <i *ngIf="sortedBy != 'Algorithm'" class="fa fa-sort"></i>
+                  </th>
+                  <th scope="col" (click)="sortByLastModified()" style="cursor: pointer;">
+                    Last Modified <i *ngIf="sortedBy === 'Last Modified' && ascending" class="fa fa-sort-up"></i>
+                    <i *ngIf="sortedBy === 'Last Modified' && !ascending" class="fa fa-sort-down"></i>
+                    <i *ngIf="sortedBy != 'Last Modified'" class="fa fa-sort"></i>
+                  </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let model of models" style="cursor: pointer"
+                    routerLink="/deployments/projects/{{model.modelMetadata.modelDescription}}/models/{{model.id}}/scoring">
+                  <th scope="row">{{model.modelMetadata.name}}</th>
+                  <td>
+                    <div *ngIf="model.modelMetadata.author"> {{model.modelMetadata.author.name}}</div>
+                  </td>
+                  <td>{{model.modelMetadata.version}}</td>
+                  <td><span class="badge badge-light font-weight-light"
+                            *ngIf="!model.modelMetadata.status">Undefined</span>
+                    <span class="badge" [ngClass]="{
+                     'badge-dark' : model?.modelMetadata?.status?.toString() === 'PLANNED',
+                     'badge-warning' : model?.modelMetadata?.status?.toString() === 'EXPERIMENTAL',
+                     'badge-success' : model?.modelMetadata?.status?.toString() === 'OPERATION',
+                     'badge-info' : model?.modelMetadata?.status?.toString() === 'MAINTENANCE',
+                     'badge-secondary' : model?.modelMetadata?.status?.toString() === 'ARCHIVED'
+                   }">
+                    {{model?.modelMetadata?.status}}
+                  </span></td>
+                  <td>{{model.modelMetadata.algorithm}}</td>
+                  <td>{{model.modelMetadata.lastModified}}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="container-fluid" *ngIf="projects && models && models?.length < 1">
+      <div class="jumbotron">
+        <h1 class="display-4">No Deployments</h1>
+        <p class="lead">There are no deployments yet.</p>
+        <hr class="my-4">
+        <p><i class="cui-lightbulb"></i> View and explore existing projects instead.</p>
+        <p class="lead">
+          <button class="btn btn-success my-2 my-sm-0" routerLinkActive="active"
+                  routerLink="/projects"
+                  type="button">View Projects
+          </button>
+        </p>
+      </div>
+    </div>
+</div>

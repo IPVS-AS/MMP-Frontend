@@ -1,0 +1,18 @@
+.tab {
+  padding-left: 2em;
+}
+
+/*remove aside menu toggler*/
+.d-md-down-none:nth-of-type(3) {
+  visibility: hidden;
+}
+
+/*and in minimized header*/
+.d-lg-none:nth-of-type(4) {
+  visibility: hidden;
+}
+
+.nav-item.disabled {
+  pointer-events: none;
+  cursor: default;
+}

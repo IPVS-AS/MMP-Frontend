@@ -1,0 +1,202 @@
+<div class="card" *ngIf="model">
+  <div class="card-body">
+    <div class="row col card-title">
+      <h3>Overview for {{model.modelMetadata.name}}&nbsp;</h3>
+      <span class="h-50 badge badge-primary">v{{model.modelMetadata.version}}</span>
+    </div>
+    <div class="row">
+      <div class="col text-left">
+        <div class="btn-toolbar">
+          <button class="btn btn-outline-primary btn-icon" [disabled]="!model?.opcuaInformationModels"
+                  routerLink="/projects/{{projectID}}/models/{{model.id}}/lineage"
+                  tooltip="Lineage" triggers="hover">
+            <i class="fa icon-share"></i>
+          </button>
+          <button class="btn btn-outline-secondary btn-icon"
+                  routerLink="/projects/{{projectID}}/models/{{model.id}}"
+                  tooltip="Open Model" triggers="hover">
+            <i class="fa fa-info"></i>
+          </button>
+          <button class="btn btn-outline-success btn-icon"
+                  routerLink="/projects/{{projectID}}/models/add"
+                  [queryParams]="{model:model.id}"
+                  tooltip="New Version" triggers="hover">
+            <i class="fa fa-code-fork"></i>
+          </button>
+          <button class="btn btn-outline-warning btn-icon"
+                  routerLink="/projects/{{projectID}}/models/{{model.id}}/edit"  tooltip="Edit"
+                  triggers="hover">
+            <i class="fa fa-edit"></i>
+          </button>
+          <button class="btn btn-outline-danger btn-icon" (click)="openConfirmationDialog()"
+                  tooltip="Delete" triggers="hover">
+            <i class="fa fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <br>
+    <dl class="row d-block">
+      <dd class="col-sm">Version {{model?.modelMetadata?.version}} of
+        {{model?.modelMetadata?.modelGroup?.modelGroupName}}
+      </dd>
+
+      <dt class="col-sm">Status:</dt>
+      <dd class="col-sm">
+        <span *ngIf="!model.modelMetadata.status" class="badge badge-light">Undefined</span>
+        <div *ngIf="model.modelMetadata.status">
+          <span class="badge" [ngClass]="{
+                    'badge-dark' : model.modelMetadata.status.toString() === 'PLANNED',
+                    'badge-light font-weight-light' : model.modelMetadata.status.toString() !== 'PLANNED'
+          }">
+            PLANNED
+          </span>
+          <span class="badge"><i class="icon-arrow-right"></i></span>
+          <span class="badge" [ngClass]="{
+                    'badge-warning' : model.modelMetadata.status.toString() === 'EXPERIMENTAL',
+                    'badge-light font-weight-light' : model.modelMetadata.status.toString() !== 'EXPERIMENTAL'
+          }">
+            EXPERIMENTAL
+          </span>
+          <span class="badge"><i class="icon-arrow-right"></i></span>
+          <span class="badge" [ngClass]="{
+                    'badge-success' : model.modelMetadata.status.toString() === 'OPERATION',
+                    'badge-light font-weight-light' : model.modelMetadata.status.toString() !== 'OPERATION'
+          }">
+            OPERATION
+          </span>
+          <span class="badge"><i class="icon-arrow-right"></i></span>
+          <span class="badge" [ngClass]="{
+                    'badge-info' : model.modelMetadata.status.toString() === 'MAINTENANCE',
+                    'badge-light font-weight-light' : model.modelMetadata.status.toString() !== 'MAINTENANCE'
+          }">
+            MAINTENANCE
+          </span>
+          <span class="badge"><i class="icon-arrow-right"></i></span>
+          <span class="badge" [ngClass]="{
+                    'badge-secondary' : model.modelMetadata.status.toString() === 'ARCHIVED',
+                    'badge-light font-weight-light' : model.modelMetadata.status.toString() !== 'ARCHIVED'
+          }">
+            ARCHIVED
+          </span>
+        </div>
+      </dd>
+
+      <dt class="col-sm">Author:</dt>
+      <dd class="col-sm">
+        <div *ngIf="model.modelMetadata.author">{{model.modelMetadata.author.name}}</div>
+      </dd>
+      <dt class="col-sm" *ngIf="model?.modelMetadata?.dateOfCreation">Date Created:</dt>
+      <dd class="col-sm" *ngIf="model?.modelMetadata?.dateOfCreation">{{model.modelMetadata.dateOfCreation}}</dd>
+
+      <dt class="col-sm" *ngIf="model?.modelMetadata?.lastModified">Last Modified:</dt>
+      <dd class="col-sm" *ngIf="model?.modelMetadata?.lastModified">{{model.modelMetadata.lastModified}}</dd>
+
+      <dt class="col-sm" *ngIf="notEmptyOrNull(model.modelMetadata.customFields)">Custom Fields:</dt>
+      <dd class="col-sm" *ngIf="notEmptyOrNull(model.modelMetadata.customFields)">
+        <ul *ngFor="let entry of model.modelMetadata.customFields" class="list-unstyled pb-00">
+          <li>{{entry.fieldName}}: {{entry.fieldContent}}</li>
+        </ul>
+      </dd>
+      <dt class="col-sm" *ngIf="model?.modelFile ">Model file size:</dt>
+      <dd class="col-sm" *ngIf="model?.modelFile">{{formatBytes(model.modelFile.fileSize)}}</dd>
+    </dl>
+
+    <dl class="row d-block"
+        *ngIf="((model?.modelMetadata?.status) && (model?.modelMetadata?.status?.toString() !== 'PLANNED'))">
+      <dt class="col-sm" *ngIf="notEmptyOrNull(model.modelMetadata.hyperparameters)">Hyperparameters:</dt>
+      <dd class="col-sm" *ngIf="notEmptyOrNull(model.modelMetadata.hyperparameters)">
+        <ul *ngFor="let hp of model.modelMetadata.hyperparameters" class="list-unstyled pb-00">
+          <li>{{hp.name}}: {{hp.value}}</li>
+        </ul>
+      </dd>
+
+      <dt class="col-sm" *ngIf="notEmptyOrNull(model.modelMetadata.trainingRuns)">Training Runs:</dt>
+      <dd class="col-sm">
+        <ul *ngFor="let tr of model.modelMetadata.trainingRuns" class="list-unstyled pb-00">
+          <li>Start Time: {{tr.startTime}}</li>
+          <li>End Time: {{tr.endTime}}</li>
+          <li>{{tr.currentScore.metricName}}: {{tr.currentScore.value}}</li>
+          <li>Annotations: {{tr.annotations}}</li>
+        </ul>
+      </dd>
+    </dl>
+    <button *ngIf="model.modelMetadata.pmmlMetadata" class="btn btn-link collapsed" type="button"
+            (click)="toggleCollapse()"
+            aria-controls="collapseContent"
+            [attr.aria-expanded]="!isCollapsed">
+      <i id="arrow" class="nav-icon"
+         [ngClass]="{'icon-arrow-up': !isCollapsed, 'icon-arrow-down': isCollapsed}"></i>&nbsp;{{infoText}}
+    </button>
+    <div *ngIf="model.modelMetadata.pmmlMetadata" id="collapseContent" [collapse]="isCollapsed">
+      <dl class="row d-block">
+        <dt class="col-sm" *ngIf="model.modelMetadata.pmmlMetadata.pmmlVersion">PMML Version:</dt>
+        <dd class="col-sm" *ngIf="model.modelMetadata.pmmlMetadata.pmmlVersion">
+          {{model.modelMetadata.pmmlMetadata.pmmlVersion}}
+        </dd>
+
+        <dt class="col-sm" *ngIf="model.modelMetadata.pmmlMetadata.applicationName">Application:</dt>
+        <dd class="col-sm" *ngIf="model.modelMetadata.pmmlMetadata.applicationName">
+          {{model.modelMetadata.pmmlMetadata.applicationName}}&nbsp;{{model.modelMetadata.pmmlMetadata.applicationVersion}}
+        </dd>
+
+        <dt class="col-sm" *ngIf="model.modelMetadata.pmmlMetadata.timestamp">Timestamp:</dt>
+        <dd class="col-sm" *ngIf="model.modelMetadata.pmmlMetadata.timestamp">
+          {{model.modelMetadata.pmmlMetadata.timestamp}}
+        </dd>
+
+        <dt class="col-sm" *ngIf="model.modelMetadata.pmmlMetadata.modelVersion">Model Version:</dt>
+        <dd class="col-sm" *ngIf="model.modelMetadata.pmmlMetadata.modelVersion">
+          {{model.modelMetadata.pmmlMetadata.modelVersion}}
+        </dd>
+
+        <dt class="col-sm" *ngIf="model.modelMetadata.pmmlMetadata.description">Model Description:</dt>
+        <dd class="col-sm" *ngIf="model.modelMetadata.pmmlMetadata.description">
+          {{model.modelMetadata.pmmlMetadata.description}}
+        </dd>
+
+        <dt class="col-sm" *ngIf="model.modelMetadata.pmmlMetadata.miningFunction">Mining Function:</dt>
+        <dd class="col-sm" *ngIf="model.modelMetadata.pmmlMetadata.miningFunction">
+          {{model.modelMetadata.pmmlMetadata.miningFunction}}
+        </dd>
+
+        <dt class="col-sm" *ngIf="model.modelMetadata.pmmlMetadata.algorithmName">Function Description:</dt>
+        <dd class="col-sm" *ngIf="model.modelMetadata.pmmlMetadata.algorithmName">
+          {{model.modelMetadata.pmmlMetadata.algorithmName}}
+        </dd>
+
+        <dt class="col-sm" *ngIf="notEmptyOrNull(model.modelMetadata.pmmlMetadata.inputAttributes)">Input Attributes:
+        </dt>
+        <dd class="col-sm" *ngIf="notEmptyOrNull(model.modelMetadata.pmmlMetadata.inputAttributes)">
+          <div *ngFor="let i of model.modelMetadata.pmmlMetadata.inputAttributes">
+            {{i.name}}
+          </div>
+        </dd>
+        <dt class="col-sm" *ngIf="notEmptyOrNull(model.modelMetadata.pmmlMetadata.outputAttributes)">Output
+          Attributes:
+        </dt>
+        <dd class="col-sm" *ngIf="notEmptyOrNull(model.modelMetadata.pmmlMetadata.outputAttributes)">
+          <div *ngFor="let o of model.modelMetadata.pmmlMetadata.outputAttributes">
+            {{o.name}}
+          </div>
+        </dd>
+        <dt class="col-sm" *ngIf="notEmptyOrNull(model.modelMetadata.pmmlMetadata.pmmlAnnotations)">Annotations:
+        </dt>
+        <dd class="col-sm" *ngIf="notEmptyOrNull(model.modelMetadata.pmmlMetadata.pmmlAnnotations)">
+          <div *ngFor="let a of model.modelMetadata.pmmlMetadata.pmmlAnnotations">
+            {{a}}
+          </div>
+        </dd>
+      </dl>
+    </div>
+  </div>
+</div>
+
+<div class="card" *ngIf="!model">
+  <div class="card-body">
+    <h2 class="card-title">No Model selected.</h2>
+    <div class="card-text">
+      Select an entry on the left to show details.
+    </div>
+  </div>
+</div>

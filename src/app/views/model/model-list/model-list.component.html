@@ -1,0 +1,236 @@
+<div class="animated fadeIn" *ngIf="projectIDExists">
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <a class="breadcrumb-item" routerLink="/projects">Projects</a>
+    <a class="breadcrumb-item" routerLink="/projects/{{projectID}}" *ngIf="project">{{project.name}}</a>
+    <span class="breadcrumb-item active" aria-current="page">Models</span>
+  </nav>
+
+  <ngx-loading-bar [includeSpinner]="'false'" [fixed]="'false'"></ngx-loading-bar>
+
+  <div class="container-fluid" *ngIf="project && models">
+    <div class="row" *ngIf="project">
+      <div class="col w-60" style="min-width: 600px" *ngIf="models.length > 0">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title">List of Models</h2>
+            <div class="row col" style="padding-bottom: 5px">
+              <span class="badge" [ngClass]="{
+                    'badge-primary' : statusContains('PLANNED') && statusContains('EXPERIMENTAL') && statusContains('OPERATION') && statusContains('MAINTENANCE') && statusContains('ARCHIVED'),
+                    'badge-light font-weight-light' : !(statusContains('PLANNED') && statusContains('EXPERIMENTAL') && statusContains('OPERATION') && statusContains('MAINTENANCE') && statusContains('ARCHIVED'))}"
+                    style="cursor: pointer; margin-bottom: 6px" (click)="clickStatus($event.target)" name="ALL">ALL
+              </span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <span class="badge" [ngClass]="{
+                    'badge-dark' : statusContains('PLANNED'),
+                    'badge-light font-weight-light' : !statusContains('PLANNED')}"
+                    style="cursor: pointer; margin-bottom: 6px" (click)="clickStatus($event.target)" name="PLANNED">PLANNED
+              </span>
+              <span class="badge"><i class="icon-arrow-right"></i></span>
+              <span class="badge" [ngClass]="{
+                    'badge-warning' : statusContains('EXPERIMENTAL'),
+                    'badge-light font-weight-light' : !statusContains('EXPERIMENTAL')}"
+                    style="cursor: pointer; margin-bottom: 6px" (click)="clickStatus($event.target)"
+                    name="EXPERIMENTAL">EXPERIMENTAL
+              </span>
+              <span class="badge"><i class="icon-arrow-right"></i></span>
+              <span class="badge" [ngClass]="{
+                    'badge-success' : statusContains('OPERATION'),
+                    'badge-light font-weight-light' : !statusContains('OPERATION')}"
+                    style="cursor: pointer; margin-bottom: 6px" (click)="clickStatus($event.target)" name="OPERATION">OPERATION
+              </span>
+              <span class="badge"><i class="icon-arrow-right"></i></span>
+              <span class="badge" [ngClass]="{
+                    'badge-info' : statusContains('MAINTENANCE'),
+                    'badge-light font-weight-light' : !statusContains('MAINTENANCE')}"
+                    style="cursor: pointer; margin-bottom: 6px" (click)="clickStatus($event.target)" name="MAINTENANCE">MAINTENANCE
+              </span>
+              <span class="badge"><i class="icon-arrow-right"></i></span>
+              <span class="badge" [ngClass]="{
+                    'badge-secondary' : statusContains('ARCHIVED'),
+                    'badge-light font-weight-light' : !statusContains('ARCHIVED')}"
+                    style="cursor: pointer; margin-bottom: 6px" (click)="clickStatus($event.target)" name="ARCHIVED">ARCHIVED
+              </span>
+            </div>
+            <div class="row">
+              <div class="col ">
+                <div class="input-group w-50">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fa fa-search"></i>
+                    </span>
+                  </div>
+                  <input type="text" class="form-control" id="filterTable" placeholder="Filter table"
+                         [(ngModel)]="filter" name="filterTable" (keyup)="filterTable()">
+                  <span class="input-group-append">
+                    <button class="btn btn-secondary" type="button" (click)="clearFilter()">Clear</button>
+                  </span>
+                </div>
+              </div>
+              <div class="col-auto">
+                <button class="btn btn-success float-right btn-icon" style="margin-left: 3px;" routerLinkActive="active"
+                        routerLink="/projects/{{project.id}}/models/add"
+                        type="button" tooltip="Add" triggers="hover"><i class="fa fa-plus-circle"></i>
+                </button>
+                <button (click)="toggleColllapseAllGroups()" class="btn btn-secondary float-right btn-icon"
+                        style="margin-left: 3px;"
+                        tooltip="Toggle ModelGroups"
+                        triggers="hover">
+                  <i [class]="isGroupsCollapsed ? 'fa fa-expand' : 'fa fa-compress'"></i>
+                </button>
+              </div>
+            </div>
+            <br>
+            <div class="table-responsive">
+              <table class="table d-table" *ngIf="models">
+                <tbody>
+                <tr *ngFor="let modelGroup of editedModelGroups" style="cursor: pointer">
+                  <td scope="row p-0" *ngIf="getMatchingModels(modelGroup.id).length != 0">
+                    <div class="card-header">
+                      <h5 class="mb-1 mt-1 collapsed" (click)="toggleCollapseGroup(modelGroup.id)"
+                          aria-controls="collapseCard"
+                          [attr.aria-expanded]="!modelGroupsKV[modelGroup.id]">
+                        <div class="row">
+                          <div class="col-5">
+                            <i class="nav-icon"
+                               [ngClass]="{'icon-arrow-up': !modelGroupsKV[modelGroup.id], 'icon-arrow-down': modelGroupsKV[modelGroup.id]}"></i>
+                            <div class="font-weight-bold d-inline">
+                              &nbsp;{{modelGroup.modelGroupName}}&nbsp;
+                            </div>
+                          </div>
+                          <div class="col-7 pr-1 pl-1">
+                            <div class="small float-right">
+                              <div class="font-weight-bold d-inline">
+                                &nbsp;Most Recent:
+                              </div>
+                              <span class="badge badge-primary">v{{(getMostRecentModel(modelGroup.id)).modelMetadata.version}}</span>&nbsp;
+
+                              <span class="badge" [ngClass]="{
+                     'badge-dark' : (getMostRecentModel(modelGroup.id)).modelMetadata.status === 'PLANNED',
+                     'badge-warning' : (getMostRecentModel(modelGroup.id)).modelMetadata.status === 'EXPERIMENTAL',
+                     'badge-success' : (getMostRecentModel(modelGroup.id)).modelMetadata.status === 'OPERATION',
+                     'badge-info' : (getMostRecentModel(modelGroup.id)).modelMetadata.status === 'MAINTENANCE',
+                     'badge-secondary' : (getMostRecentModel(modelGroup.id)).modelMetadata.status === 'ARCHIVED'
+                   }"> {{(getMostRecentModel(modelGroup.id)).modelMetadata.status}}
+                  </span>&nbsp;
+                              Last Modified: {{(getMostRecentModel(modelGroup.id)).modelMetadata.lastModified}}
+                            </div>
+                          </div>
+                        </div>
+                      </h5>
+                    </div>
+                    <div [collapse]="modelGroupsKV[modelGroup.id]" style="padding-left: 10px">
+                      <table class="table table-hover table-responsive bg-transparent" style="display: table"
+                             *ngIf="models">
+                        <thead *ngIf="getMatchingModels(modelGroup.id).length != 0">
+                        <tr class="text-nowrap">
+                          <th scope="col" (click)="sortByName()" style="cursor: pointer; border-top: 0">
+                            Name <i *ngIf="sortedBy === 'name' && ascending" class="fa fa-sort-up"></i>
+                            <i *ngIf="sortedBy === 'name' && !ascending" class="fa fa-sort-down"></i>
+                            <i *ngIf="sortedBy != 'name'" class="fa fa-sort"></i>
+                          </th>
+                          <th scope="col" (click)="sortByAuthor()" style="cursor: pointer;border-top: 0">
+                            Author <i *ngIf="sortedBy === 'Author' && ascending" class="fa fa-sort-up"></i>
+                            <i *ngIf="sortedBy === 'Author' && !ascending" class="fa fa-sort-down"></i>
+                            <i *ngIf="sortedBy != 'Author'" class="fa fa-sort"></i>
+                          </th>
+                          <th scope="col" (click)="sortByVersion()" style="cursor: pointer;border-top: 0">
+                            Version <i *ngIf="sortedBy === 'Version' && ascending" class="fa fa-sort-up"></i>
+                            <i *ngIf="sortedBy === 'Version' && !ascending" class="fa fa-sort-down"></i>
+                            <i *ngIf="sortedBy != 'Version'" class="fa fa-sort"></i>
+                          </th>
+                          <th scope="col" (click)="sortByStatus()" style="cursor: pointer;border-top: 0">
+                            Status <i *ngIf="sortedBy === 'Status' && ascending" class="fa fa-sort-up"></i>
+                            <i *ngIf="sortedBy === 'Status' && !ascending" class="fa fa-sort-down"></i>
+                            <i *ngIf="sortedBy != 'Status'" class="fa fa-sort"></i>
+                          </th>
+                          <th scope="col" (click)="sortByAlgorithm()" style="cursor: pointer;border-top: 0">
+                            Algorithm <i *ngIf="sortedBy === 'Algorithm' && ascending" class="fa fa-sort-up"></i>
+                            <i *ngIf="sortedBy === 'Algorithm' && !ascending" class="fa fa-sort-down"></i>
+                            <i *ngIf="sortedBy != 'Algorithm'" class="fa fa-sort"></i>
+                          </th>
+                          <th scope="col" (click)="sortByLastModified()" style="cursor: pointer;border-top: 0">
+                            Last Modified <i *ngIf="sortedBy === 'Last Modified' && ascending"
+                                             class="fa fa-sort-up"></i>
+                            <i *ngIf="sortedBy === 'Last Modified' && !ascending" class="fa fa-sort-down"></i>
+                            <i *ngIf="sortedBy != 'Last Modified'" class="fa fa-sort"></i>
+                          </th>
+                        </tr>
+                        </thead>
+                        <td *ngIf="getMatchingModels(modelGroup.id).length == 0">
+                          <div class="small">No matching Models for the selected Filter.</div>
+
+                        </td>
+                        <tbody>
+                        <tr *ngFor="let model of getMatchingModels(modelGroup.id), let i=index" (click)="select(i, modelGroup.id, model)"
+                            style="cursor: pointer" [ngClass]="{'active' : (i == selectedRow) && (modelGroup.id == selectedGroup)}">
+                          <td scope="row">{{model.modelMetadata.name}}</td>
+                          <td>
+                            <div *ngIf="model.modelMetadata.author"> {{model.modelMetadata.author.name}}</div>
+                          </td>
+                          <td>v{{model.modelMetadata.version}}</td>
+                          <td><span class="badge badge-light font-weight-light"
+                                    *ngIf="!model.modelMetadata.status">Undefined</span>
+                            <span class="badge" [ngClass]="{
+                     'badge-dark' : model?.modelMetadata?.status?.toString() === 'PLANNED',
+                     'badge-warning' : model?.modelMetadata?.status?.toString() === 'EXPERIMENTAL',
+                     'badge-success' : model?.modelMetadata?.status?.toString() === 'OPERATION',
+                     'badge-info' : model?.modelMetadata?.status?.toString() === 'MAINTENANCE',
+                     'badge-secondary' : model?.modelMetadata?.status?.toString() === 'ARCHIVED'
+                   }">
+                    {{model?.modelMetadata?.status}}
+                  </span></td>
+                          <td>{{model.modelMetadata.algorithm}}</td>
+                          <td>{{model.modelMetadata.lastModified}}</td>
+                        </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="jumbotron" *ngIf="models && models.length < 1">
+        <h1 class="display-4">No Models</h1>
+        <p class="lead">There are no models yet for the selected project.</p>
+        <hr class="my-4">
+        <p><i class="cui-lightbulb"></i> You can be the first to add a model to '{{project.name}}'.</p>
+        <p class="lead">
+          <button class="btn btn-success my-2 my-sm-0" routerLinkActive="active"
+                  routerLink="/projects/{{project.id}}/models/add"
+                  type="button">Add
+          </button>
+        </p>
+      </div>
+
+      <div class="col w-40">
+        <div class="sticky-top">
+          <div class="card-header" id="headingOne">
+            <h5 class="collapsed mt-2 mb-2" style="cursor: pointer" (click)="toggleCollapse()"
+                aria-controls="collapseCard"
+                [attr.aria-expanded]="!isCollapsed">
+              <i id="arrow" class="nav-icon"
+                 [ngClass]="{'icon-arrow-up': !isCollapsed, 'icon-arrow-down': isCollapsed}"></i>&nbsp;
+              <div class="font-weight-bold d-inline">
+                &nbsp; {{infoText}} &nbsp;
+              </div>
+            </h5>
+          </div>
+
+          <div id="collapseCard" [collapse]="isCollapsed">
+            <app-project-details [project]="project"></app-project-details>
+          </div>
+
+          <app-model-details *ngIf="models.length > 0" [model]="selectedModel" [project]="project"
+                             [parent]="instance"></app-model-details>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<app-resource-not-found *ngIf="timeout && !projectIDExists"></app-resource-not-found>

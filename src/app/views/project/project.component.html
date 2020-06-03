@@ -1,0 +1,142 @@
+<div class="animated fadeIn">
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <span class="breadcrumb-item active" aria-current="page">Projects</span>
+  </nav>
+
+  <ngx-loading-bar [includeSpinner]="'false'" [fixed]="'false'"></ngx-loading-bar>
+
+  <div class="container-fluid" *ngIf="projects?.length > 0">
+    <div class="row">
+      <div class="col w-60">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title">List of Projects</h2>
+            <div class="row col" style="padding-bottom: 5px">
+              <span class="badge" [ngClass]="{
+                    'badge-primary' : statusContains('NEW') && statusContains('IN_PROGRESS') && statusContains('CLOSED'),
+                    'badge-light font-weight-light' : !statusContains('NEW') && statusContains('IN_PROGRESS') && statusContains('CLOSED')}"
+                    style="cursor: pointer; margin-bottom: 6px" (click)="clickStatus($event.target)" name="ALL">ALL
+              </span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <span class="badge" [ngClass]="{
+                    'badge-dark' : statusContains('NEW'),
+                    'badge-light font-weight-light' : !statusContains('NEW')}"
+                    style="cursor: pointer; margin-bottom: 6px" (click)="clickStatus($event.target)" name="NEW">NEW
+              </span>
+              <span class="badge"><i class="icon-arrow-right"></i></span>
+              <span class="badge" [ngClass]="{
+                    'badge-success' : statusContains('IN_PROGRESS'),
+                    'badge-light font-weight-light' : !statusContains('IN_PROGRESS')}"
+                    style="cursor: pointer; margin-bottom: 6px" (click)="clickStatus($event.target)"
+                    name="IN_PROGRESS">IN_PROGRESS
+              </span>
+              <span class="badge"><i class="icon-arrow-right"></i></span>
+              <span class="badge" [ngClass]="{
+                    'badge-secondary' : statusContains('CLOSED'),
+                    'badge-light font-weight-light' : !statusContains('CLOSED')}"
+                    style="cursor: pointer; margin-bottom: 6px" (click)="clickStatus($event.target)" name="CLOSED">CLOSED
+              </span>
+            </div>
+            <div class="row">
+              <div class="col ">
+                <div class="input-group w-50">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fa fa-search"></i>
+                    </span>
+                  </div>
+                  <input type="text" class="form-control" id="filterTable" placeholder="Filter table"
+                         [(ngModel)]="filter" name="filterTable" (keyup)="filterTable()">
+                  <span class="input-group-append">
+                    <button class="btn btn-secondary" type="button" (click)="clearFilter()">Clear</button>
+                  </span>
+                </div>
+              </div>
+              <div class="col-sm-auto">
+                <button class="btn btn-success my-2 my-sm-0 btn-icon" routerLinkActive="active"
+                        routerLink="/projects/add" type="button" tooltip="Add"><i class="fa fa-plus-circle"></i>
+                </button>
+              </div>
+            </div>
+
+            <br>
+
+            <div class="table-responsive table-hover">
+              <table class="table">
+                <thead>
+                <tr>
+                  <th scope="col" (click)="sortByName()" style="cursor: pointer;">
+                    Name <i *ngIf="sortedBy === 'name' && ascending" class="fa fa-sort-up"></i>
+                    <i *ngIf="sortedBy === 'name' && !ascending" class="fa fa-sort-down"></i>
+                    <i *ngIf="sortedBy != 'name'" class="fa fa-sort"></i>
+                  </th>
+                  <th scope="col" (click)="sortByUseCase()" style="cursor: pointer;">
+                    Use Case <i *ngIf="sortedBy === 'useCase' && ascending" class="fa fa-sort-up"></i>
+                    <i *ngIf="sortedBy === 'useCase' && !ascending" class="fa fa-sort-down"></i>
+                    <i *ngIf="sortedBy != 'useCase'" class="fa fa-sort"></i>
+                  </th>
+                  <th scope="col" (click)="sortByStatus()" style="cursor: pointer;">
+                    Status <i *ngIf="sortedBy === 'Status' && ascending" class="fa fa-sort-up"></i>
+                    <i *ngIf="sortedBy === 'Status' && !ascending" class="fa fa-sort-down"></i>
+                    <i *ngIf="sortedBy != 'Status'" class="fa fa-sort"></i>
+                  </th>
+                  <th scope="col" (click)="sortByStartDate()" style="cursor: pointer;">
+                    Start Date <i *ngIf="sortedBy === 'Start Date' && ascending" class="fa fa-sort-up"></i>
+                    <i *ngIf="sortedBy === 'startDate' && !ascending" class="fa fa-sort-down"></i>
+                    <i *ngIf="sortedBy != 'startDate'" class="fa fa-sort"></i>
+                  </th>
+                  <th scope="col" (click)="sortByEndDate()" style="cursor: pointer;">
+                    End Date <i *ngIf="sortedBy === 'endDate' && ascending" class="fa fa-sort-up"></i>
+                    <i *ngIf="sortedBy === 'endDate' && !ascending" class="fa fa-sort-down"></i>
+                    <i *ngIf="sortedBy != 'endDate'" class="fa fa-sort"></i>
+                  </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let project of getMatchingProjects(), let i=index" style="cursor: pointer"
+                    (click)="onClick(i, project)"
+                    [ngClass]="{'active' : i == selectedRow}">
+                  <td>{{project.name}}</td>
+                  <td>{{project.useCase}}</td>
+                  <td><span class="badge badge-light font-weight-light"
+                            *ngIf="!project.status">Undefined</span>
+                    <span class="badge" [ngClass]="{
+                     'badge-dark' : project?.status?.toString() === 'NEW',
+                     'badge-success' : project?.status?.toString() === 'IN_PROGRESS',
+                     'badge-secondary' : project?.status?.toString() === 'CLOSED'
+                   }">
+                    {{project?.status}}
+                  </span></td>
+                  <td>{{project.startDate}}</td>
+                  <td>{{project.endDate}}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col w-40">
+        <app-project-details [project]="selectedProject"
+                             [parent]="instance"></app-project-details>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="container-fluid" *ngIf="projects && projects?.length < 1">
+    <div class="jumbotron">
+      <h1 class="display-4">No Projects</h1>
+      <p class="lead">There are no projects yet.</p>
+      <hr class="my-4">
+      <p><i class="cui-lightbulb"></i> You can be the first to add a new project.</p>
+      <p class="lead">
+        <button class="btn btn-success my-2 my-sm-0" routerLinkActive="active"
+                routerLink="/projects/add"
+                type="button">Add
+        </button>
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,22 @@
+<form #dialog="ngForm">
+  <h2 mat-dialog-title>
+          <div *ngIf="editMode; else elseBlock">Edit Organisation Unit</div>
+          <ng-template #elseBlock>Add Organisation Unit</ng-template>
+  </h2>
+  <mat-dialog-content>
+          <div class="form-group row">
+            <label for="organisationUnitLabel" class="col-sm-2 col-form-label">Label:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="organisationUnitLabel" required
+                     [(ngModel)]="organisationUnit.label"
+                     name="organisationUnitLabel">
+          </div>
+          </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button type="button" class="btn btn-ghost-danger" data-dismiss="modal" (click)="cancel()">Cancel</button>
+    &nbsp;
+    <button type="button" class="btn btn-success" (click)="submit()" [disabled]="!dialog.form.valid">Submit</button>
+  </mat-dialog-actions>
+</form>

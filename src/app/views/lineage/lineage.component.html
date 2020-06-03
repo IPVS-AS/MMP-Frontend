@@ -1,0 +1,37 @@
+<div class="animated fadeIn" *ngIf="projectIDExists && modelIDExists">
+
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <a class="breadcrumb-item" routerLink="/projects">Projects</a>
+    <a class="breadcrumb-item" routerLink="/projects/{{projectId}}">{{projectName}}</a>
+    <a class="breadcrumb-item" routerLink="/projects/{{projectId}}/models">Models</a>
+    <a class="breadcrumb-item" routerLink="/projects/{{projectId}}/models/{{modelId}}">{{modelName}}</a>
+    <span class="breadcrumb-item active" aria-current="page">Lineage</span>
+  </nav>
+
+  <div class="container-fluid">
+
+    <div class="card">
+      <div class="card-body">
+        <h2 class="card-title">Lineage Information for Model: {{modelName}}</h2>
+        <div>
+          <app-collapsible-tree #collTree></app-collapsible-tree>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="jumbotron" *ngIf="opcuaInformationModels && opcuaInformationModels.length < 1">
+    <h1 class="display-4">No OPCUA Information Model</h1>
+    <p class="lead">There is no opcua information model supplied yet for the selected model.</p>
+    <hr class="my-4">
+    <p><i class="cui-lightbulb"></i> You can edit the model '{{modelName}}' and upload an opcua file.</p>
+    <p class="lead">
+      <button class="btn btn-primary" routerLinkActive="active"
+              routerLink="/projects/{{projectId}}/models/{{modelId}}/edit" type="button">
+        Edit
+      </button>
+    </p>
+  </div>
+
+</div>
+<app-resource-not-found *ngIf="(timeout && !projectIDExists) || (timeout && !modelIDExists)"></app-resource-not-found>

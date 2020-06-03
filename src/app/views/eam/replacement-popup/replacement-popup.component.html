@@ -1,0 +1,95 @@
+<div class="modal-header">
+  <h4 class="modal-title pull-left">Apply update on other occurrences?</h4>
+  <button type="button" class="close" aria-label="Close" (click)="bsModalRef.hide()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="ml-1 row">
+    <div class="col">
+      <div class="card-title">
+        <h4>Select which version(s) to keep</h4>
+        <button class="btn btn-primary mb-1" (click)="replaceAll()">Replace all</button>
+        old versions with the added candidate. <br>
+        <button class="btn btn-secondary" (click)="keepAll()">Keep all</button>
+        old versions and ignore the added candidate.
+      </div>
+    </div>
+    <div class="col">
+      <div class="row card">
+        <div class="card-body col">
+          <h4 class="card-title">
+            <span class="badge badge-primary">NEW</span>
+            {{addedModel?.modelMetadata?.name}} (v{{addedModel?.modelMetadata?.version}})
+          </h4>
+          <dl class="d-block mb-0">
+            <dt>Author:</dt>
+            <dd *ngIf="addedModel?.modelMetadata?.author">{{addedModel?.modelMetadata?.author.name}}</dd>
+            <dt>Project:</dt>
+            <dd *ngIf="addedProject?.name">{{addedProject?.name}}</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h4 class="container-legend">Or select manually for each affected container:</h4>
+  <div class="small text-secondary container-legend">
+    OU: Organisation Unit(s), BP: Business Process(es)
+  </div>
+  <div class="card-deck m-0 w-100">
+    <div class="card container-card border border-dark" *ngFor="let gridCell of gridCells">
+      <div class="card-body">
+        <!-- organisation units -->
+        <div class="col-auto">
+          <i class="icon-organization"></i>&nbsp;<b>OU: </b>
+          <span *ngFor="let org of gridCell.cell.orga; last as isLast;">
+                  {{org.label}}<span [hidden]="isLast">,</span>
+                </span>
+        </div>
+        <!-- business processes -->
+        <div class="col-auto">
+          <b class="bp-title">
+            &nbsp;&nbsp;BP:&nbsp;
+          </b>&nbsp;
+          <span *ngFor="let proc of gridCell.cell.proc; last as isLast;">
+                  {{proc.label}}<span [hidden]="isLast">,</span>
+                </span>
+        </div>
+
+        <hr class="container-hr">
+        <!--Added Model-->
+        <div class="row">
+          <button class="btn btn-primary col-auto" (click)="replace(gridCell)" tooltip="Replace all old versions"><i
+            class="fa fa-level-up"></i></button>
+          <label class="col">
+            <input type="checkbox" title="Keep new version" [checked]="gridCell.addedModel.keep"
+                   (change)="gridCell.addedModel.keep = !gridCell.addedModel.keep">&nbsp;
+            <span class="badge badge-primary">NEW</span>
+            {{gridCell.addedModel.model.modelMetadata.name}} (v{{gridCell.addedModel.model.modelMetadata.version}})
+          </label>
+        </div>
+        <hr class="container-hr">
+        <!-- list of candidates -->
+        <div class="row">
+          <button class="btn btn-secondary col-auto" (click)="keep(gridCell)" tooltip="Keep all old versions"><i
+            class="fa fa-level-down"></i></button>
+          <div class="col">
+            <div class="row" *ngFor="let modelAction of gridCell.cell.modelAction">
+              <label class="col">
+                <input type="checkbox" title="Keep previous version" [checked]="modelAction.keep"
+                       (change)="modelAction.keep = !modelAction.keep">&nbsp;
+                <span class="badge badge-secondary">OLD</span>
+                {{modelAction.model.modelMetadata.name}} (v{{modelAction.model.modelMetadata.version}})
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary m-1" data-dismiss="modal" (click)="cancel()">Cancel</button>
+  <button type="button" class="btn btn-primary m-1" (click)="submit()">Submit</button>
+</div>

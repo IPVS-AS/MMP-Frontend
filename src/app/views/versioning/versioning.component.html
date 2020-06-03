@@ -1,0 +1,260 @@
+<div class="animated fadeIn">
+
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <a class="breadcrumb-item" routerLink="/projects">Projects</a>
+    <a class="breadcrumb-item" routerLink="/projects/{{projectId}}" *ngIf="project">{{project?.name}}</a>
+    <a class="breadcrumb-item" routerLink="/projects/{{projectId}}/models">Models</a>
+    <a class="breadcrumb-item" routerLink="/projects/{{projectId}}/models/{{modelId}}">{{model?.modelMetadata?.name}}</a>
+    <span class="breadcrumb-item active" aria-current="page">Versioning</span>
+  </nav>
+
+  <div class="container-fluid" *ngIf="model">
+    <div class="row">
+      <div class="col-8">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Versioning for {{model.modelMetadata?.modelGroup?.modelGroupName}}</h4>
+          </div>
+          <div class="card-body">
+            <accordion [closeOthers]="true">
+              <div class="row" *ngFor="let m of models">
+                <div class="col-2 text-center">
+                  <h1 style="margin: 0;">
+                    <span class="badge badge-primary" style="cursor: pointer" (click)="clickLabel($event.target, m)">
+                        v{{m.modelMetadata?.version}}
+                      </span></h1>
+                </div>
+                <accordion-group class="col-10" [isOpen]="m.id === model.id" style="cursor: pointer">
+                  <div accordion-heading>
+                    <button class="btn btn-block btn-link clearfix" style="overflow: auto">
+                      <div class="pull-left float-left text-dark">
+                        {{m.modelMetadata?.name}}
+                      </div>
+                    </button>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <h4>PMML Metadata</h4>
+                    </div>
+                    <div class="col">
+                      <button class="btn btn-outline-secondary pull-right btn-icon"
+                              routerLink="/projects/{{projectId}}/models/{{model.id}}"
+                              type="button">
+                        <i class="fa fa-info"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div *ngIf="m.modelMetadata?.pmmlMetadata; else elseBlock">
+                    <div class="row">
+                      <div class="col-3" *ngIf="m.modelMetadata?.pmmlMetadata?.pmmlVersion"><b>PMML Version:</b></div>
+                      <div class="col-9" *ngIf="m.modelMetadata?.pmmlMetadata?.pmmlVersion">
+                        {{m.modelMetadata?.pmmlMetadata?.pmmlVersion}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-3" *ngIf="m.modelMetadata?.pmmlMetadata?.applicationName"><b>Application:</b>
+                      </div>
+                      <div class="col-9" *ngIf="m.modelMetadata?.pmmlMetadata?.applicationName">
+                        {{m.modelMetadata?.pmmlMetadata?.applicationName}}&nbsp;{{m.modelMetadata?.pmmlMetadata?.applicationVersion}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-3" *ngIf="m.modelMetadata.pmmlMetadata?.timestamp"><b>Timestamp:</b></div>
+                      <div class="col-9" *ngIf="m.modelMetadata.pmmlMetadata?.timestamp">
+                        {{m.modelMetadata.pmmlMetadata.timestamp}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-3" *ngIf="m.modelMetadata?.pmmlMetadata?.modelVersion"><b>Model Version:</b>
+                      </div>
+                      <div class="col-9" *ngIf="m.modelMetadata?.pmmlMetadata?.modelVersion">
+                        {{m.modelMetadata?.pmmlMetadata?.modelVersion}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-3" *ngIf="m.modelMetadata.pmmlMetadata?.description"><b>Model Description:</b>
+                      </div>
+                      <div class="col-9" *ngIf="m.modelMetadata?.pmmlMetadata?.description">
+                        {{m.modelMetadata?.pmmlMetadata?.description}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-3" *ngIf="m.modelMetadata?.pmmlMetadata?.miningFunction"><b>Mining Function:</b>
+                      </div>
+                      <div class="col-9" *ngIf="m.modelMetadata?.pmmlMetadata?.miningFunction">
+                        {{m.modelMetadata?.pmmlMetadata?.miningFunction}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-3" *ngIf="m.modelMetadata.pmmlMetadata?.algorithmName"><b>Function
+                        Description:</b>
+                      </div>
+                      <div class="col-9" *ngIf="m.modelMetadata.pmmlMetadata?.algorithmName">
+                        {{m.modelMetadata.pmmlMetadata.algorithmName}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-3" *ngIf="notEmptyOrNull(m.modelMetadata?.pmmlMetadata?.inputAttributes)"><b>Input
+                        Attributes:</b>
+                      </div>
+                      <div class="col-9" *ngIf="notEmptyOrNull(m.modelMetadata?.pmmlMetadata?.inputAttributes)">
+                        {{stringifyInputOutputList(m.modelMetadata?.pmmlMetadata?.inputAttributes)}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-3" *ngIf="notEmptyOrNull(m.modelMetadata?.pmmlMetadata?.outputAttributes)">
+                        <b>Output Attributes:</b>
+                      </div>
+                      <div class="col-9" *ngIf="notEmptyOrNull(m.modelMetadata?.pmmlMetadata?.outputAttributes)">
+                        {{stringifyInputOutputList(m.modelMetadata?.pmmlMetadata?.outputAttributes)}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-3" *ngIf="notEmptyOrNull(m.modelMetadata?.pmmlMetadata?.pmmlAnnotations)"><b>Annotations:</b>
+                      </div>
+                      <div class="col-9" *ngIf="notEmptyOrNull(m.modelMetadata?.pmmlMetadata?.pmmlAnnotations)">
+                        {{stringifyAnnotations(m.modelMetadata?.pmmlMetadata?.pmmlAnnotations)}}
+                      </div>
+                    </div>
+                  </div>
+                  <ng-template #elseBlock>
+                    Not available.
+                  </ng-template>
+                </accordion-group>
+              </div>
+            </accordion>
+          </div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div id="diffCard" class="card m-0 sticky-top" *ngIf="models.length >= 2">
+          <div class="card-header">
+            <h4 class="card-title">Selected models for Diff</h4>
+          </div>
+          <div class="card-body">
+            <p>Select two models by clicking on the labels on the left.</p>
+            <div class="col" *ngFor="let m of diffModels">
+              <h3 class="m-1">
+                    <span class="badge badge-success">
+                    v{{m.modelMetadata?.version}}
+                  </span>
+                {{m.modelMetadata?.name}}
+              </h3>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="row justify-content-between">
+              <button class="btn btn-default" (click)="clear()">Clear</button>
+              <button class="btn btn-primary"
+                      [disabled]="diffModels.length < 2"
+                      (click)="openModal(diffModal)">Diff
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div bsModal #diffModal="bs-modal" class="modal fade" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-large">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title pull-left">Diff Viewer</h4>
+            <button type="button" class="close pull-right" aria-label="Close" (click)="diffModal.hide()">
+              <span aria-hidden="true"><i class="icon-close"></i></span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-6" *ngFor="let m of sortedDiffModels; let i = index">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="row col card-title">
+                      <h4>{{m.modelMetadata.name}}&nbsp;</h4>
+                      <span class="h-50 badge badge-success">v{{m.modelMetadata.version}}</span>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div id="diffPmmlVersion{{i}}" class="row">
+                      <div class="col-3"><b>PMML Version:</b></div>
+                      <div class="col-9" *ngIf="m.modelMetadata.pmmlMetadata?.pmmlVersion">
+                        {{m.modelMetadata?.pmmlMetadata?.pmmlVersion}}
+                      </div>
+                    </div>
+                    <div id="diffAppName{{i}}" class="row">
+                      <div class="col-3"><b>Application:</b>
+                      </div>
+                      <div class="col-9" *ngIf="m.modelMetadata?.pmmlMetadata?.applicationName">
+                        {{m.modelMetadata?.pmmlMetadata?.applicationName}}&nbsp;{{m.modelMetadata?.pmmlMetadata?.applicationVersion}}
+                      </div>
+                    </div>
+                    <div id="diffTimeStamp{{i}}" class="row">
+                      <div class="col-3"><b>Timestamp:</b></div>
+                      <div class="col-9" *ngIf="m.modelMetadata?.pmmlMetadata?.timestamp">
+                        {{m.modelMetadata?.pmmlMetadata?.timestamp}}
+                      </div>
+                    </div>
+                    <div id="diffModelVersion{{i}}" class="row">
+                      <div class="col-3"><b>Model Version:</b>
+                      </div>
+                      <div class="col-9" *ngIf="m.modelMetadata?.pmmlMetadata?.modelVersion">
+                        {{m.modelMetadata?.pmmlMetadata?.modelVersion}}
+                      </div>
+                    </div>
+                    <div id="diffDescription{{i}}" class="row">
+                      <div class="col-3"><b>Model Description:</b>
+                      </div>
+                      <div class="col-9" *ngIf="m.modelMetadata?.pmmlMetadata?.description">
+                        {{m.modelMetadata?.pmmlMetadata?.description}}
+                      </div>
+                    </div>
+                    <div id="diffMiningFunction{{i}}" class="row">
+                      <div class="col-3"><b>Mining Function:</b>
+                      </div>
+                      <div class="col-9" *ngIf="m.modelMetadata?.pmmlMetadata?.miningFunction">
+                        {{m.modelMetadata?.pmmlMetadata?.miningFunction}}
+                      </div>
+                    </div>
+                    <div id="diffAlgoName{{i}}" class="row">
+                      <div class="col-3"><b>Function
+                        Description:</b>
+                      </div>
+                      <div class="col-9" *ngIf="m.modelMetadata?.pmmlMetadata?.algorithmName">
+                        {{m.modelMetadata?.pmmlMetadata?.algorithmName}}
+                      </div>
+                    </div>
+                    <div id="diffInputs{{i}}" class="row">
+                      <div class="col-3"><b>Input
+                        Attributes:</b>
+                      </div>
+                      <div class="col-9" *ngIf="notEmptyOrNull(m.modelMetadata?.pmmlMetadata?.inputAttributes)">
+                        {{stringifyInputOutputList(m.modelMetadata?.pmmlMetadata?.inputAttributes)}}
+                      </div>
+                    </div>
+                    <div id="diffOutputs{{i}}" class="row">
+                      <div class="col-3">
+                        <b>Output Attributes:</b>
+                      </div>
+                      <div class="col-9" *ngIf="notEmptyOrNull(m.modelMetadata?.pmmlMetadata?.outputAttributes)">
+                        {{stringifyInputOutputList(m.modelMetadata?.pmmlMetadata?.outputAttributes)}}
+                      </div>
+                    </div>
+                    <div id="diffAnnotations{{i}}" class="row">
+                      <div class="col-3">
+                        <b>Annotations:</b>
+                      </div>
+                      <div class="col-9" *ngIf="notEmptyOrNull(m.modelMetadata?.pmmlMetadata?.pmmlAnnotations)">
+                        {{stringifyAnnotations(m.modelMetadata?.pmmlMetadata?.pmmlAnnotations)}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

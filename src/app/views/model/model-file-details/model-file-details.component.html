@@ -1,0 +1,18 @@
+<div class="animated fadeIn">
+  <div class="container-fluid">
+    <div class="card" *ngIf="pmmlMetaData || _opcuaInformationModels">
+      <div class="card-body">
+        <tabset>
+          <tab  id="pmml_tab" heading="PMML" *ngIf="pmmlMetaData" [active]="showPmml" (select)=" showPmml=true">
+            <ngx-json-viewer [json]="pmmlMetaData" [expanded]="false"></ngx-json-viewer>
+          </tab>
+          <tab id="opcua_tab" heading="OPCUA" *ngIf="showTree" [active]="!showPmml" (select)="updateOpcuaTree()">
+            <div>
+              <app-collapsible-tree #collTree></app-collapsible-tree>
+            </div>
+          </tab>
+        </tabset>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+<form #dialog="ngForm">
+  <h2 mat-dialog-title>
+    <div *ngIf="editMode; else elseBlock">Edit Business Process</div>
+    <ng-template #elseBlock>Add Business Process</ng-template>
+  </h2>
+
+  <mat-dialog-content>
+    <label for="businessProcessLabel" class="col-sm-2 col-form-label">Label:</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="businessProcessLabel" required
+             [(ngModel)]="businessProcess.label"
+             name="businessProcessLabel">
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button type="button" class="btn btn-ghost-danger" data-dismiss="modal" (click)="cancel()">Cancel</button>
+    &nbsp;
+    <button type="button" class="btn btn-success" (click)="submit()" [disabled]="!dialog.form.valid">Submit</button>
+  </mat-dialog-actions>
+</form>

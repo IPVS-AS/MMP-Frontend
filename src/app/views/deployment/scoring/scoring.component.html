@@ -1,0 +1,131 @@
+<div class="animated fadeIn" *ngIf="projectIDExists && modelIDExists">
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <a class="breadcrumb-item" routerLink="/deployments">Deployments</a>
+    <a class="breadcrumb-item" routerLink="/projects/{{model?.projectId}}/models/{{modelId}}">{{model?.modelMetadata?.name}}</a>
+    <span class="breadcrumb-item active" aria-current="page">Scoring</span>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row justify-content-sm-around">
+      <div class="col-sm-5">
+        <form #scoreForm="ngForm">
+          <div #inputCard class="card">
+            <div class="card-header">
+              <h2 class="card-title">Inputs</h2>
+            </div>
+            <div class="card-body">
+              <h4 class="card-title">Active</h4>
+              <div *ngFor="let i of inputs; let index = index">
+                <div class="form-group">
+                  <label for="{{i.name}}">{{i.name.replace('_', ' ')}}*</label>
+                  <div *ngIf="i.possibleValues?.length === 0; else else1">
+                    <input class="form-control" id="{{i.name}}" name="{{i.name}}" [(ngModel)]="i.value"
+                           [type]="i.dataType === 'integer' ? 'number' : i.dataType"
+                           [step]="i.dataType === 'number' ? 0.1 : null"
+                           [min]="i.interval?.startRange"
+                           [max]="i.interval?.endRange"
+                           [appInInterval]="i.interval"
+                           [maxlength]="i.dataType === 'text' ? 255 : null"
+                           (keypress)="keyPressNumberValidator($event,i.dataType)"
+                           required
+
+                    >
+                  </div>
+                  <ng-template #else1>
+                    <select class="form-control" id="{{i.name}}" name="{{i.name}}" [(ngModel)]="i.value" required>
+                      <option *ngFor="let pv of i.possibleValues" [value]="pv"> {{pv}}</option>
+                    </select>
+                  </ng-template>
+                  <div class="small text-secondary"
+                       *ngIf="(i.dataType === 'number' || i.dataType === 'integer') && (i.value == '' && ( i.interval?.startRange || i.interval?.endRange))">
+                    The allowed interval is {{i.interval?.startRange}} - {{i.interval?.endRange}}
+                  </div>
+                  <div class="small text-danger"
+                       *ngIf="(i.dataType === 'number' || i.dataType === 'integer') && i.interval !== null && ((parseInt(i.value) < i.interval?.startRange || (parseInt(i.value) > i.interval?.endRange)) && i.value != '' )">
+                    {{i.value}} is not a valid value. The allowed interval is {{i.interval?.startRange}} -
+                    {{i.interval?.endRange}}
+                  </div>
+                </div>
+              </div>
+
+
+              <h4 class="card-title" *ngIf="supInputs.length > 0">Supplementary</h4>
+              <div *ngFor="let si of supInputs">
+                <div class="form-group">
+                  <label for="{{si.name}}">{{si.name.replace('_', ' ')}}</label>
+                  <div *ngIf="si.possibleValues?.length === 0; else else1">
+                    <input class="form-control" id="{{si.name}}" name="{{si.name}}" [(ngModel)]="si.value"
+                           [type]="si.dataType === 'integer' ? 'number' : si.dataType"
+                           [step]="si.dataType === 'number' ? 0.1 : null"
+                           [min]="si.interval?.startRange"
+                           [max]="si.interval?.endRange"
+                           [appInInterval]="si.interval"
+                           [maxlength]="si.dataType === 'text' ? 255 : null"
+                           (keypress)="keyPressNumberValidator($event,si.dataType)"
+                           >
+                  </div>
+                  <ng-template #else1>
+                    <select class="form-control" id="{{si.name}}" name="{{si.name}}" [(ngModel)]="si.value">
+                      <option *ngFor="let pv of si.possibleValues" [value]="pv">{{pv}}</option>
+                    </select>
+                  </ng-template>
+                  <div class="small text-secondary"
+                       *ngIf="(si.dataType === 'number' || si.dataType === 'integer') && (si.value === '' && ( si.interval?.startRange || si.interval?.endRange))">
+                    The allowed interval is {{si.interval?.startRange}} - {{si.interval?.endRange}}
+                  </div>
+                  <div class="small text-danger"
+                       *ngIf="(si.dataType === 'number' || si.dataType === 'integer') && si.interval !== null && ((parseInt(si.value) < si.interval?.startRange || (parseInt(si.value) > si.interval?.endRange)) && si.value != '' )">
+                    {{si.value}} is not a valid value. The allowed interval is {{si.interval?.startRange}} -
+                    {{si.interval?.endRange}}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer text-center">
+              <div class="row justify-content-between">
+                <button class="btn btn-default" type="button" routerLink="/deployments">Cancel
+                </button>
+                <button class="btn btn-primary" type="button" (click)="scoreModel()" [disabled]="!scoreForm.form.valid">
+                  Score
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="col-sm-5">
+        <div id="outputCard" class="card" *ngIf="outputs">
+          <div class="card-header">
+            <h2 class="card-title">Outputs</h2>
+          </div>
+          <div class="card-body">
+            <div *ngFor="let o of outputs">
+              <div class="form-group">
+                <label for="{{o.name}}">{{o.name.replace('_', ' ')}}</label>
+                <input class="form-control" id="{{o.name}}" value="{{o.value}}" disabled>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="row justify-content-end">
+              <button class="btn btn-default" type="button" (click)="reset()">Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+  <div class="card" *ngIf="timeout && !projectIDExists">
+    <div class="card-body">
+      <h2 class="card-title">Invalid Project selected.</h2>
+      <div class="card-text">
+        Project with ID {{projectId}} does not exist.
+      </div>
+    </div>
+  </div>
+</div>
+<app-resource-not-found *ngIf="timeout && projectIDExists && !modelIDExists"></app-resource-not-found>

@@ -1,0 +1,85 @@
+<div class="animated fadeIn">
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <span class="breadcrumb-item active" aria-current="page">Users</span>
+  </nav>
+
+  <ngx-loading-bar [includeSpinner]="'false'" [fixed]="'false'"></ngx-loading-bar>
+
+  <div class="container-fluid">
+    <div class="card" *ngIf="users?.length > 0">
+      <div class="card-body">
+        <h2 class="card-title">List of Users</h2>
+        <div class="row">
+          <div class="col-sm-auto">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                  <span class="input-group-text">
+                    <i class="fa fa-search"></i>
+                  </span>
+              </div>
+              <input type="text" class="form-control" id="filterTable" placeholder="Filter table"
+                     [(ngModel)]="filter" name="filterTable" (keyup)="filterTable()">
+              <span class="input-group-append">
+                  <button class="btn btn-secondary" type="button" (click)="clearFilter()">Clear</button>
+                </span>
+            </div>
+          </div>
+          <div class="col"></div>
+          <div class="col-sm-auto">
+            <button class="btn btn-success my-2 my-sm-0 btn-icon" routerLinkActive="active"
+                    routerLink="/users/add" type="button" tooltip="Add" triggers="hover"><i class="fa fa-plus-circle"></i>
+            </button>
+          </div>
+        </div>
+        <br>
+        <td class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+            <tr class="text-nowrap">
+              <th scope="col" (click)="sortByName()" style="cursor: pointer;">
+                Name <i *ngIf="sortedBy === 'name' && ascending" class="fa fa-sort-up"></i>
+                <i *ngIf="sortedBy === 'name' && !ascending" class="fa fa-sort-down"></i>
+                <i *ngIf="sortedBy != 'name'" class="fa fa-sort"></i>
+              </th>
+              <th scope="col" (click)="sortByRole()" style="cursor: pointer;">
+                Role <i *ngIf="sortedBy === 'Role' && ascending" class="fa fa-sort-up"></i>
+                <i *ngIf="sortedBy === 'Role' && !ascending" class="fa fa-sort-down"></i>
+                <i *ngIf="sortedBy != 'Role'" class="fa fa-sort"></i>
+              </th>
+              <th scope="col" valign="top">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let user of editedUsers, let i=index"
+                (click)="selectUser(i)"
+                [ngClass]="{'active' : i == selectedRow}">
+              <th scope="row">{{user.name}}</th>
+              <td>{{user.role}}</td>
+              <td>
+                <button class="btn btn-outline-warning mr-1 btn-icon mt-0" type="button" routerLink="/users/{{user.id}}/edit" tooltip="Edit" triggers="hover">
+                  <span class="nav-icon fa fa-edit "></span>
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-icon mt-0" (click)="openConfirmationDialog(user)" tooltip="Delete" triggers="hover">
+                  <span class="nav-icon fa fa-trash"></span>
+                </button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="jumbotron" *ngIf="users && users?.length < 1">
+    <h1 class="display-4">No Users</h1>
+    <p class="lead">There are no users yet.</p>
+    <hr class="my-4">
+    <p><i class="cui-lightbulb"></i> You can be the first to add a new user.</p>
+    <p class="lead">
+      <button class="btn btn-success my-2 my-sm-0" routerLinkActive="active"
+              routerLink="/users/add"
+              type="button">Add
+      </button>
+    </p>
+  </div>
+</div>

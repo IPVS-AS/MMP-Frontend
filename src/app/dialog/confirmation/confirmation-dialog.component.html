@@ -1,0 +1,10 @@
+<div class="reorg">
+  <h3 mat-dialog-title>Confirm</h3>
+  <mat-dialog-content class="breakline">
+    {{confirmMessage}}
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button class="btn btn-ghost-danger" (click)="dialogRef.close(true)">Cancel</button>
+    <button class="btn btn-ghost-success" (click)="confirm()">Confirm</button>
+  </mat-dialog-actions>
+</div>

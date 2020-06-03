@@ -1,0 +1,18 @@
+// Here you can add other styles
+@import "@ng-select/ng-select/themes/default.theme.css";
+@import "angular2-toaster/toaster.css";
+@import "../assets/forms.css";
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "~dragula/dist/dragula.css";
+
+// hide leftover grey box when deleting eam-containers
+.gridster-preview {
+  visibility: hidden;
+}
+
+.btn-icon {
+  height: 35px;
+  width: 45px;
+  margin-right: 5px;
+  margin-top: 5px;
+}
