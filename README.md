@@ -3,7 +3,7 @@ The frontend project of the Industry 4.0 - Model Management Platform.
 The frontend ist based on [Angular](https://angular.io/guide/quickstart) and uses the [CoreUI admin template](https://github.com/coreui/coreui-free-angular-admin-template) that is based on [Bootstrap](https://getbootstrap.com/).
 
 # Demo Video
-<iframe width="560" height="315" src="https://www.youtube.com/embed/wVK5BLIZTf0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![Watch the video](https://raw.githubusercontent.com/IPVS-AS/MMP-Frontend/master/demo-preview.jpg)](https://www.youtube.com/watch?v=wVK5BLIZTf0)
 
 # Install
 
